@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package session;
+
+message SaveRequest {
+    string sessid = 1;
+    int64 userId = 2;
+    string access_token = 3;
+    string refresh_token = 4;
+}
+
+message SaveResponse {
+    bool success = 1;
+}
+
+message GetRequest {
+    string sessid = 1;
+}
+
+message GetResponse {
+    int64 userId = 1;
+    string access_token = 2;
+    string refresh_token = 3;
+}
+
+service SessionService {
+    rpc Save (SaveRequest) returns (SaveResponse) {}
+    rpc Get (GetRequest) returns (GetResponse) {}
+}
