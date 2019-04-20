@@ -5,6 +5,7 @@
   - Add protobuf and generate message
   - Generater grpc server
   - add entrypoint
+  - add makefile
 
 ## 2019-04-16
 ### Add
