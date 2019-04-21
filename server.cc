@@ -8,7 +8,18 @@
 
 #include <grpcpp/grpcpp.h>
 
+#include "service.grpc.pb.h"
+
+using grpc::Server;
 using grpc::ServerBuilder;
+using grpc::ServerContext;
+using grpc::Status;
+
+using session::SaveRequest;
+using session::SaveResponse;
+using session::GetRequest;
+using session::GetResponse;
+using session::SessionService;
 
 class ServiceSessionServer final : public SessionService::Service {
     ::grpc::Status SessionService::Service::Save(::grpc::ServerContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response) override {
