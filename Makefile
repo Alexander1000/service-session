@@ -1,6 +1,6 @@
 build:
 	rm -f ./bin/*.o \
-    && g++ -Wall ./server.cc -o ./bin/server.o \
+    && g++ -Wall ./server.cc -std=c++11 -dynamiclib -o ./bin/server.o \
     && g++ ./bin/server.o -o ./bin/server
 
 proto.grpc:
