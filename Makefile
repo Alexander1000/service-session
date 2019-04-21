@@ -1,6 +1,11 @@
 build:
 	rm -f ./bin/*.o \
-    && g++ -Wall ./server.cc -std=c++11 -dynamiclib -o ./bin/server.o \
+    && g++ \
+        -I ~/cpp/grpc/third_party/protobuf/src \
+        -Wall \
+        ./server.cc \
+        -std=c++11 \
+        -o ./bin/server.o \
     && g++ ./bin/server.o -o ./bin/server
 
 proto.grpc:
