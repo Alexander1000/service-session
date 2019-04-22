@@ -3,8 +3,9 @@ build:
     && g++ \
         -I ~/cpp/grpc/third_party/protobuf/src \
         -Wall \
+        -v \
         ./server.cc \
-        -std=c++11 \
+        -std=c++14 \
         -o ./bin/server.o \
     && g++ ./bin/server.o -o ./bin/server
 

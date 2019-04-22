@@ -22,22 +22,19 @@ using session::GetResponse;
 using session::SessionService;
 
 class ServiceSessionServer final : public SessionService::Service {
-    ::grpc::Status SessionService::Service::Save(::grpc::ServerContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response) override {
-        (void) context;
-        (void) request;
-        (void) response;
-        return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+public:
+    Status Save(ServerContext* context, const SaveRequest* request, SaveResponse* response) override {
+        // implement me
+        return Status::OK;
     }
 
-    ::grpc::Status SessionService::Service::Get(::grpc::ServerContext* context, const ::session::GetRequest* request, ::session::GetResponse* response) override {
-        (void) context;
-        (void) request;
-        (void) response;
-        return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    Status Get(ServerContext* context, const GetRequest* request, GetResponse* response) override {
+        // implement me
+        return Status::OK;
     }
 };
 
-int main (int argc, char** argv) {
+void RunServer() {
     std::string server_address("0.0.0.0:50051");
     ServiceSessionServer service;
 
@@ -54,6 +51,10 @@ int main (int argc, char** argv) {
     // Wait for the server to shutdown. Note that some other thread must be
     // responsible for shutting down the server for this call to ever return.
     server->Wait();
+}
+
+int main (int argc, char** argv) {
+    RunServer();
 
     return 0;
 }
