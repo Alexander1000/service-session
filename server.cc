@@ -25,12 +25,12 @@ class ServiceSessionServer final : public SessionService::Service {
 public:
     Status Save(ServerContext* context, const SaveRequest* request, SaveResponse* response) override {
         // implement me
-        return Status::OK;
+        return Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
 
     Status Get(ServerContext* context, const GetRequest* request, GetResponse* response) override {
         // implement me
-        return Status::OK;
+        return Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
 };
 

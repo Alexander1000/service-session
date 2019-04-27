@@ -1,11 +1,16 @@
 build:
 	rm -f ./bin/*.o \
     && g++ \
+        -std=c++14 \
+        -stdlib=libc++ \
+        -O3 \
+        -I ~/cpp/grpc/src/cpp/server \
         -I ~/cpp/grpc/third_party/protobuf/src \
+        -I ~/cpp/grpc/third_party/libcxx/src \
         -Wall \
         -v \
+        -dynamiclib \
         ./server.cc \
-        -std=c++14 \
         -o ./bin/server.o \
     && g++ ./bin/server.o -o ./bin/server
 
