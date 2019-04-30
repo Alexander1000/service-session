@@ -1,8 +1,9 @@
 cmake_minimum_required(VERSION 2.6)
-project (Service Session)
-# The version number.
-set (Service_Session_VERSION_MAJOR 1)
-set (Service_Session_VERSION_MINOR 0)
+
+# compiler options
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
 # add the executable
-add_executable(Service Session.cxx)
+add_executable(service-session server.cc)
