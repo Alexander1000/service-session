@@ -1,5 +1,9 @@
 # Changelog service-session
 
+## 2019-04-30
+### Changed
+  - use cmake for build project
+
 ## 2019-04-20
 ### Add
   - Add protobuf and generate message
