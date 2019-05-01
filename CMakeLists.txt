@@ -10,6 +10,8 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include_directories(
     third_party/protobuf/src
     third_party/grpc/include
+    third_party/cares
+    third_party/zlib
 )
 
 set(_PROTOBUF_LIBPROTOBUF protobuf::libprotobuf)
