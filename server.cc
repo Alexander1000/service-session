@@ -30,7 +30,10 @@ public:
 
     Status Get(ServerContext* context, const GetRequest* request, GetResponse* response) override {
         // implement me
-        return Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+        std::cout << "receive message" << std::endl;
+        std::cout << "sessid: " << request->sessid() << std::endl;
+        response->set_userid(777);
+        return Status(::grpc::StatusCode::OK, "");
     }
 };
 
