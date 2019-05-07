@@ -33,6 +33,8 @@ public:
         std::cout << "receive message" << std::endl;
         std::cout << "sessid: " << request->sessid() << std::endl;
         response->set_userid(777);
+        response->set_access_token("some-access-token");
+        response->set_refresh_token("some-refrech-token");
         return Status(::grpc::StatusCode::OK, NULL);
     }
 };
