@@ -45,7 +45,7 @@ message(STATUS "Found protobuf libraries: ${LIBPROTOBUF}")
 # find_library(LIBGRPC_UNSECURE grpc_unsecure PATHS ${GRPC_LIB_DIR} NO_DEFAULT_PATH)
 find_library(LIBGRPCPP_UNSECURE grpc++_unsecure PATHS ${GRPC_LIB_DIR} NO_DEFAULT_PATH)
 
-message(STATUS "Found grpc libraries: ${LIBGRPCPP}")
+message(STATUS "Found grpc libraries: ${LIBGRPCPP_UNSECURE}")
 
 
 # add the executable
@@ -56,6 +56,6 @@ add_executable(
 )
 
 target_link_libraries(service-session
-    ${LIBGRPCPP}
+    ${LIBGRPCPP_UNSECURE}
     ${LIBPROTOBUF}
 )
