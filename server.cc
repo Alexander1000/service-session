@@ -33,7 +33,7 @@ public:
         std::cout << "receive message" << std::endl;
         std::cout << "sessid: " << request->sessid() << std::endl;
         response->set_userid(777);
-        return Status(::grpc::StatusCode::OK, "");
+        return Status(::grpc::StatusCode::OK, NULL);
     }
 };
 
