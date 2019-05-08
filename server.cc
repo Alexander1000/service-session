@@ -35,7 +35,7 @@ public:
         response->set_userid(777);
         response->set_access_token("some-access-token");
         response->set_refresh_token("some-refrech-token");
-        return Status(::grpc::StatusCode::OK, NULL);
+        return Status::OK;
     }
 };
 
