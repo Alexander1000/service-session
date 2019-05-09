@@ -8,6 +8,10 @@
 
 #include <grpcpp/grpcpp.h>
 
+#include <tarantool/tarantool.h>
+#include <tarantool/tnt_net.h>
+#include <tarantool/tnt_opt.h>
+
 #include "service.grpc.pb.h"
 
 using grpc::Server;
@@ -20,6 +24,8 @@ using session::SaveResponse;
 using session::GetRequest;
 using session::GetResponse;
 using session::SessionService;
+
+void TestConnectTarantool();
 
 class ServiceSessionServer final : public SessionService::Service {
 public:
@@ -35,9 +41,24 @@ public:
         response->set_userid(777);
         response->set_access_token("some-access-token");
         response->set_refresh_token("some-refrech-token");
+        TestConnectTarantool();
         return Status::OK;
     }
 };
+
+void TestConnectTarantool() {
+    const char * uri = "127.0.0.1:3302";
+    struct tnt_stream * tnt = tnt_net(NULL); // Allocating stream
+    tnt_set(tnt, TNT_OPT_URI, uri); // Setting URI
+    tnt_set(tnt, TNT_OPT_SEND_BUF, 0); // Disable buffering for send
+    tnt_set(tnt, TNT_OPT_RECV_BUF, 0); // Disable buffering for recv
+    tnt_connect(tnt); // Initialize stream and connect to Tarantool
+    tnt_ping(tnt); // Send ping request
+    struct tnt_reply * reply = tnt_reply_init(NULL); // Initialize reply
+    tnt->read_reply(tnt, reply); // Read reply from server
+    tnt_reply_free(reply); // Free reply
+    tnt_close(tnt); tnt_stream_free(tnt); // Close connection and free stream object
+}
 
 void RunServer() {
     std::string server_address("0.0.0.0:50051");

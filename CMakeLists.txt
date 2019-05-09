@@ -43,10 +43,15 @@ message(STATUS "Found protobuf libraries: ${LIBPROTOBUF}")
 # find_library(LIBGRPC_PLUGIN_SUPPORT grpc_plugin_support PATHS ${GRPC_LIB_DIR} NO_DEFAULT_PATH)
 # find_library(LIBGRPCPP_REFLECTION grpc++_reflection PATHS ${GRPC_LIB_DIR} NO_DEFAULT_PATH)
 # find_library(LIBGRPC_UNSECURE grpc_unsecure PATHS ${GRPC_LIB_DIR} NO_DEFAULT_PATH)
-find_library(LIBGRPCPP_UNSECURE grpc++_unsecure PATHS ${GRPC_LIB_DIR} NO_DEFAULT_PATH)
 
+find_library(LIBGRPCPP_UNSECURE grpc++_unsecure PATHS ${GRPC_LIB_DIR} NO_DEFAULT_PATH)
 message(STATUS "Found grpc libraries: ${LIBGRPCPP_UNSECURE}")
 
+find_library(TARANTOOL_C libtarantool.a)
+message(STATUS "Found libtarantool library: ${TARANTOOL_C}")
+
+find_library(MSGPACK libmsgpackc.a)
+message(STATUS "Found libmsgpack: ${MSGPACK}")
 
 # add the executable
 add_executable(
@@ -58,4 +63,6 @@ add_executable(
 target_link_libraries(service-session
     ${LIBGRPCPP_UNSECURE}
     ${LIBPROTOBUF}
+    ${TARANTOOL_C}
+    ${MSGPACK}
 )
