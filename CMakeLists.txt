@@ -24,8 +24,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include_directories(
     third_party/grpc/include
     third_party/protobuf/src
-    third_party/tarantool
-    third_party/msgpack
 )
 
 set(GRPC_LIB_DIR /usr/local/lib)
