@@ -50,8 +50,8 @@ message(STATUS "Found grpc libraries: ${LIBGRPCPP_UNSECURE}")
 find_library(TARANTOOL_C libtarantool.a)
 message(STATUS "Found libtarantool library: ${TARANTOOL_C}")
 
-find_library(MSGPACK libmsgpackc.a)
-message(STATUS "Found libmsgpack: ${MSGPACK}")
+find_library(MSGPACK libmsgpuck.a)
+message(STATUS "Found libmsgpuck: ${MSGPACK}")
 
 # add the executable
 add_executable(
