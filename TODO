@@ -1,0 +1,5 @@
+Parametrise stratup:
+    - listen port
+    - tarantool connector
+
+Separate code on some fragments
