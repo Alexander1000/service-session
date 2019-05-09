@@ -1,5 +1,9 @@
 # Changelog service-session
 
+## 2019-05-09
+### Changed
+  - include tarantool library
+
 ## 2019-04-30
 ### Changed
   - use cmake for build project
