@@ -23,13 +23,21 @@ public:
     void getBySessId(std::string sessId) {
         std::cout << "GetBySessId called with: " << sessId << std::endl;
 
+        int spaceNo = 0, indexNo = 0;
+        spaceNo = this->getSpaceNo();
+        indexNo = this->getIndexNo();
+
         struct tnt_stream* tnt = this->connect();
+        if (tnt == NULL) {
+            std::cout << "error on get connect in get sessid" << std::endl;
+            return;
+        }
 
         struct tnt_stream *obj = NULL;
         obj = tnt_object(NULL);
         tnt_object_add_str(obj, sessId.c_str(), strlen(sessId.c_str()));
 
-        tnt_select(tnt, this->getSpaceNo(), this->getIndexNo(), 1, 0, 0, obj);
+        tnt_select(tnt, spaceNo, indexNo, 1, 0, 0, obj);
 
         struct tnt_reply * reply = tnt_reply_init(NULL); // Initialize reply
         tnt->read_reply(tnt, reply); // Read reply from server
@@ -54,11 +62,17 @@ private:
     int indexNo;
 
     struct tnt_stream* connect() {
-        struct tnt_stream * tnt = tnt_net(NULL); // Allocating stream
+        struct tnt_stream *tnt = tnt_net(NULL); // Allocating stream
         tnt_set(tnt, TNT_OPT_URI, this->address.c_str()); // Setting URI
         tnt_set(tnt, TNT_OPT_SEND_BUF, 0); // Disable buffering for send
         tnt_set(tnt, TNT_OPT_RECV_BUF, 0); // Disable buffering for recv
-        tnt_connect(tnt); // Initialize stream and connect to Tarantool
+
+        // Initialize stream and connect to Tarantool
+        if (tnt_connect(tnt) == -1) {
+            tnt_stream_free(tnt);
+            return NULL;
+        }
+
         return tnt;
     }
 
@@ -73,6 +87,10 @@ private:
         }
 
         struct tnt_stream* tnt = this->connect();
+        if (tnt == NULL) {
+            std::cout << "error on get connect in getSpaceNo" << std::endl;
+            return -1;
+        }
 
         this->spaceNo = tnt_get_spaceno(tnt, "us", 2);
 
@@ -87,6 +105,10 @@ private:
         }
 
         struct tnt_stream* tnt = this->connect();
+        if (tnt == NULL) {
+            std::cout << "error on get connect in getIndexNo" << std::endl;
+            return -1;
+        }
 
         this->indexNo = tnt_get_indexno(tnt, this->getSpaceNo(), "pk", 2);
 
