@@ -21,6 +21,8 @@ public:
     }
 
     void getBySessId(std::string sessId) {
+        std::cout << "GetBySessId called with: " << sessId << std::endl;
+
         struct tnt_stream* tnt = this->connect();
 
         struct tnt_stream *obj = NULL;
