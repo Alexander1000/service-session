@@ -33,7 +33,7 @@ public:
             return;
         }
 
-        spaceNo = tnt_get_spaceno(tnt, "us", 2);
+        spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
         if (spaceNo == -1) {
             std::cout << "error in gen space no" << std::endl;
             this->free_connect(tnt);
