@@ -14,6 +14,7 @@ public:
     Storage(std::string address) {
         this->address = address;
         this->spaceNo = 0;
+        this->indexNo = 0;
     }
 
     void getBySessId(std::string sessId) {
@@ -34,6 +35,8 @@ private:
 
     int spaceNo;
 
+    int indexNo;
+
     int getSpaceNo() {
         if (this->spaceNo > 0) {
             return this->spaceNo;
@@ -49,5 +52,22 @@ private:
         tnt_stream_free(tnt); // Close connection and free stream object
 
         return this->spaceNo;
+    }
+
+    int getIndexNo() {
+        if (this->indexNo > 0) {
+            return this->indexNo;
+        }
+
+        struct tnt_stream * tnt = tnt_net(NULL); // Allocating stream
+        tnt_set(tnt, TNT_OPT_URI, this->address.c_str()); // Setting URI
+        tnt_set(tnt, TNT_OPT_SEND_BUF, 0); // Disable buffering for send
+        tnt_set(tnt, TNT_OPT_RECV_BUF, 0); // Disable buffering for recv
+        tnt_connect(tnt); // Initialize stream and connect to Tarantool
+        this->indexNo = tnt_get_indexno(tnt, this->getSpaceNo(), "pk", 2);
+        tnt_close(tnt);
+        tnt_stream_free(tnt); // Close connection and free stream object
+
+        return this->indexNo;
     }
 };
