@@ -2,11 +2,14 @@
  * Storage Tarantool
  */
 
+#include <iostream>
 #include <string>
 
 #include <tarantool/tarantool.h>
 #include <tarantool/tnt_net.h>
 #include <tarantool/tnt_opt.h>
+
+#include <msgpuck.h>
 
 class Storage
 {
@@ -28,6 +31,15 @@ public:
 
         struct tnt_reply * reply = tnt_reply_init(NULL); // Initialize reply
         tnt->read_reply(tnt, reply); // Read reply from server
+
+        // unpack reply
+
+        if (reply->code != 0) {
+            std::cout << "Fail: " << reply->code << std::endl;
+        } else {
+            std::cout << "TypeOf: " << mp_typeof(*reply->data) << std::endl;
+        }
+
         tnt_reply_free(reply); // Free reply
 
         this->free_connect(tnt);
