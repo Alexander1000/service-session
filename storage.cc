@@ -24,8 +24,8 @@ public:
         std::cout << "GetBySessId called with: " << sessId << std::endl;
 
         int spaceNo = 0, indexNo = 0;
-        spaceNo = this->getSpaceNo();
-        indexNo = this->getIndexNo();
+        // spaceNo = this->getSpaceNo();
+        // indexNo = this->getIndexNo();
 
         struct tnt_stream* tnt = this->connect();
         if (tnt == NULL) {
@@ -33,11 +33,13 @@ public:
             return;
         }
 
+        spaceNo = tnt_get_spaceno(tnt, "us", 2);
+
         struct tnt_stream *obj = NULL;
         obj = tnt_object(NULL);
         tnt_object_add_str(obj, sessId.c_str(), strlen(sessId.c_str()));
 
-        tnt_select(tnt, spaceNo, indexNo, 1, 0, 0, obj);
+        tnt_select(tnt, spaceNo, 0, 1, 0, 0, obj);
 
         struct tnt_reply * reply = tnt_reply_init(NULL); // Initialize reply
         tnt->read_reply(tnt, reply); // Read reply from server
