@@ -18,17 +18,19 @@ public:
     }
 
     void getBySessId(std::string sessId) {
-        struct tnt_stream * tnt = tnt_net(NULL); // Allocating stream
-        tnt_set(tnt, TNT_OPT_URI, this->address.c_str()); // Setting URI
-        tnt_set(tnt, TNT_OPT_SEND_BUF, 0); // Disable buffering for send
-        tnt_set(tnt, TNT_OPT_RECV_BUF, 0); // Disable buffering for recv
-        tnt_connect(tnt); // Initialize stream and connect to Tarantool
-        tnt_ping(tnt); // Send ping request
+        struct tnt_stream* tnt = this->connect();
+
+        struct tnt_stream *obj = NULL;
+        obj = tnt_object(NULL);
+        tnt_object_add_str(obj, sessId.c_str(), strlen(sessId.c_str()));
+
+        tnt_select(tnt, this->getSpaceNo(), this->getIndexNo(), 1, 0, 0, obj);
+
         struct tnt_reply * reply = tnt_reply_init(NULL); // Initialize reply
         tnt->read_reply(tnt, reply); // Read reply from server
         tnt_reply_free(reply); // Free reply
-        tnt_close(tnt);
-        tnt_stream_free(tnt); // Close connection and free stream object
+
+        this->free_connect(tnt);
     }
 private:
     std::string address;
@@ -37,19 +39,30 @@ private:
 
     int indexNo;
 
-    int getSpaceNo() {
-        if (this->spaceNo > 0) {
-            return this->spaceNo;
-        }
-
+    struct tnt_stream* connect() {
         struct tnt_stream * tnt = tnt_net(NULL); // Allocating stream
         tnt_set(tnt, TNT_OPT_URI, this->address.c_str()); // Setting URI
         tnt_set(tnt, TNT_OPT_SEND_BUF, 0); // Disable buffering for send
         tnt_set(tnt, TNT_OPT_RECV_BUF, 0); // Disable buffering for recv
         tnt_connect(tnt); // Initialize stream and connect to Tarantool
-        this->spaceNo = tnt_get_spaceno(tnt, "us", 2);
+        return tnt;
+    }
+
+    void free_connect(struct tnt_stream* tnt) {
         tnt_close(tnt);
         tnt_stream_free(tnt); // Close connection and free stream object
+    }
+
+    int getSpaceNo() {
+        if (this->spaceNo > 0) {
+            return this->spaceNo;
+        }
+
+        struct tnt_stream* tnt = this->connect();
+
+        this->spaceNo = tnt_get_spaceno(tnt, "us", 2);
+
+        this->free_connect(tnt);
 
         return this->spaceNo;
     }
@@ -59,14 +72,11 @@ private:
             return this->indexNo;
         }
 
-        struct tnt_stream * tnt = tnt_net(NULL); // Allocating stream
-        tnt_set(tnt, TNT_OPT_URI, this->address.c_str()); // Setting URI
-        tnt_set(tnt, TNT_OPT_SEND_BUF, 0); // Disable buffering for send
-        tnt_set(tnt, TNT_OPT_RECV_BUF, 0); // Disable buffering for recv
-        tnt_connect(tnt); // Initialize stream and connect to Tarantool
+        struct tnt_stream* tnt = this->connect();
+
         this->indexNo = tnt_get_indexno(tnt, this->getSpaceNo(), "pk", 2);
-        tnt_close(tnt);
-        tnt_stream_free(tnt); // Close connection and free stream object
+
+        this->free_connect(tnt);
 
         return this->indexNo;
     }
