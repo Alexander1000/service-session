@@ -25,8 +25,6 @@ using session::SessionService;
 
 void TestConnectTarantool();
 
-Storage storage("127.0.0.1:3302");
-
 class ServiceSessionServer final : public SessionService::Service {
 public:
     Status Save(ServerContext* context, const SaveRequest* request, SaveResponse* response) override {
@@ -35,13 +33,13 @@ public:
     }
 
     Status Get(ServerContext* context, const GetRequest* request, GetResponse* response) override {
-        // implement me
         std::cout << "receive message" << std::endl;
         std::cout << "sessid: " << request->sessid() << std::endl;
         response->set_userid(777);
         response->set_access_token("some-access-token");
         response->set_refresh_token("some-refrech-token");
 
+        Storage storage("127.0.0.1:3302");
         storage.getBySessId(request->sessid());
 
         return Status::OK;
