@@ -34,6 +34,13 @@ public:
         }
 
         spaceNo = tnt_get_spaceno(tnt, "us", 2);
+        if (spaceNo == -1) {
+            std::cout << "error in gen space no" << std::endl;
+            this->free_connect(tnt);
+            return;
+        }
+
+        std::cout << "space no: " << spaceNo << std::endl;
 
         struct tnt_stream *obj = NULL;
         obj = tnt_object(NULL);
