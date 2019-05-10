@@ -23,19 +23,15 @@ public:
     void getBySessId(std::string sessId) {
         std::cout << "GetBySessId called with: " << sessId << std::endl;
 
-        int spaceNo = 0, indexNo = 0;
-        // spaceNo = this->getSpaceNo();
-        // indexNo = this->getIndexNo();
-
         struct tnt_stream* tnt = this->connect();
         if (tnt == NULL) {
             std::cout << "error on get connect in get sessid" << std::endl;
             return;
         }
 
-        spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
+        int spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
         if (spaceNo == -1) {
-            std::cout << "error in gen space no" << std::endl;
+            std::cout << "error while get space no" << std::endl;
             this->free_connect(tnt);
             return;
         }
@@ -72,6 +68,7 @@ private:
 
     struct tnt_stream* connect() {
         struct tnt_stream *tnt = tnt_net(NULL); // Allocating stream
+        std::cout << "connection to " << this->address.c_str() << std::endl;
         tnt_set(tnt, TNT_OPT_URI, this->address.c_str()); // Setting URI
         tnt_set(tnt, TNT_OPT_SEND_BUF, 0); // Disable buffering for send
         tnt_set(tnt, TNT_OPT_RECV_BUF, 0); // Disable buffering for recv
@@ -101,7 +98,7 @@ private:
             return -1;
         }
 
-        this->spaceNo = tnt_get_spaceno(tnt, "us", 2);
+        this->spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
 
         this->free_connect(tnt);
 
