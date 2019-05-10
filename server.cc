@@ -23,8 +23,6 @@ using session::GetRequest;
 using session::GetResponse;
 using session::SessionService;
 
-void TestConnectTarantool();
-
 class ServiceSessionServer final : public SessionService::Service {
 public:
     Status Save(ServerContext* context, const SaveRequest* request, SaveResponse* response) override {
