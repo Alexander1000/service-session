@@ -67,7 +67,17 @@ public:
         }
 
         struct tnt_reply * reply = tnt_reply_init(NULL); // Initialize reply
-        tnt->read_reply(tnt, reply); // Read reply from server
+
+        // Read reply from server
+        if (tnt->read_reply(tnt, reply) == -1) {
+            std::cout << "Failed to recv/parse result" << std::endl;
+            if (tnt_error(tnt)) {
+                std::cout << "Error: " << tnt_strerror(tnt) << std::endl;
+            }
+            tnt_reply_free(reply); // Free reply
+            this->free_connect(tnt);
+            return;
+        }
 
         // unpack reply
 
@@ -79,7 +89,7 @@ public:
             std::cout << "TypeOf: " << mp_typeof(*reply->data) << std::endl;
 
             if (mp_typeof(*reply->data) != MP_ARRAY) {
-                std::cout << "Bad reply format" << std::endl;
+                std::cout << "Bad reply format (not array)" << std::endl;
                 this->free_connect(tnt);
                 return;
             } else if (mp_decode_array(&reply->data) == 0) {
@@ -87,7 +97,7 @@ public:
                 this->free_connect(tnt);
                 return;
             } else if (mp_decode_array(&reply->data) < 0) {
-                std::cout << "Bad reply format" << std::endl;
+                std::cout << "Bad reply format (decode size)" << std::endl;
                 this->free_connect(tnt);
                 return;
             }
@@ -96,6 +106,7 @@ public:
 
             const char *data = reply->data;
             uint32_t len = mp_decode_array(&data);
+            std::cout << "len decoded: " << len << std::endl;
             if (len < 2) {
                 std::cout << "err len: " << len << std::endl;
                 this->free_connect(tnt);
@@ -117,7 +128,7 @@ public:
 
             // user id
             if (mp_typeof(*data) != MP_UINT) {
-                std::cout << "bad reply format" << std::endl;
+                std::cout << "bad reply format(user-id)" << std::endl;
                 this->free_connect(tnt);
                 return;
             }
@@ -137,7 +148,7 @@ public:
 
             // refresh token
             if (mp_typeof(*data) != MP_STR) {
-                std::cout << "bad reply format" << std::endl;
+                std::cout << "bad reply format(r-token)" << std::endl;
                 this->free_connect(tnt);
                 return;
             }
