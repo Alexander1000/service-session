@@ -58,13 +58,15 @@ public:
 
         int limit = 1, offset = 0;
 
-        int bytes_number = tnt_select(tnt, spaceNo, indexNo, limit, offset, 0, obj);
+        int bytes_number = tnt_select(tnt, spaceNo, indexNo, limit, offset, TNT_ITER_EQ, obj);
         if (bytes_number == -1) {
             std::cout << "error: " << tnt_error(tnt) << std::endl;
             std::cout << "error while read data" << std::endl;
             this->free_connect(tnt);
             return;
         }
+
+        std::cout << "count bytes: " << bytes_number << std::endl;
 
         struct tnt_reply * reply = tnt_reply_init(NULL); // Initialize reply
 
