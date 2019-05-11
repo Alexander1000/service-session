@@ -122,6 +122,26 @@ public:
             int userId = mp_decode_uint(&data);
 
             std::cout << "F: useId: " << userId << std::endl;
+
+            // access token
+            if (mp_typeof(*data) != MP_STR) {
+                std::cout << "bad reply format" << std::endl;
+                this->free_connect(tnt);
+                return;
+            }
+            char* tAccessToken = (char *)mp_decode_str(&data, &str_len);
+            tAccessToken = strndup(tAccessToken, str_len);
+            std::cout << "F: access token: " << tAccessToken << std::endl;
+
+            // refresh token
+            if (mp_typeof(*data) != MP_STR) {
+                std::cout << "bad reply format" << std::endl;
+                this->free_connect(tnt);
+                return;
+            }
+            char* tRefreshToken = (char *)mp_decode_str(&data, &str_len);
+            tRefreshToken = strndup(tRefreshToken, str_len);
+            std::cout << "F: refresh token: " << tRefreshToken << std::endl;
         }
 
         tnt_reply_free(reply); // Free reply
