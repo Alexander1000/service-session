@@ -86,16 +86,18 @@ public:
                 std::cout << "Zero" << std::endl;
                 this->free_connect(tnt);
                 return;
-            } else if (mp_decode_array(&reply->data) > 0) {
+            } else if (mp_decode_array(&reply->data) < 0) {
                 std::cout << "Bad reply format" << std::endl;
                 this->free_connect(tnt);
                 return;
             }
 
+            std::cout << "begin decode reply" << std::endl;
+
             const char *data = reply->data;
             uint32_t len = mp_decode_array(&data);
-            if (len < 4) {
-                std::cout << "err len" << std::endl;
+            if (len < 2) {
+                std::cout << "err len: " << len << std::endl;
                 this->free_connect(tnt);
                 return;
             }
@@ -104,7 +106,7 @@ public:
 
             // sessid
             if (mp_typeof(*data) != MP_STR) {
-                std::cout << "bad reply format" << std::endl;
+                std::cout << "bad reply format(sessid) " << mp_typeof(*data) << std::endl;
                 this->free_connect(tnt);
                 return;
             }
@@ -125,7 +127,7 @@ public:
 
             // access token
             if (mp_typeof(*data) != MP_STR) {
-                std::cout << "bad reply format" << std::endl;
+                std::cout << "bad reply format(a-token)" << mp_typeof(*data) << std::endl;
                 this->free_connect(tnt);
                 return;
             }
