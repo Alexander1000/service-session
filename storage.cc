@@ -51,6 +51,9 @@ public:
 
         struct tnt_stream *obj = NULL;
         obj = tnt_object(NULL);
+        tnt_object_reset(obj);
+
+        tnt_object_add_array(obj, 1);
         tnt_object_add_str(obj, sessId.c_str(), strlen(sessId.c_str()));
 
         int limit = 1, offset = 0;
@@ -70,8 +73,55 @@ public:
 
         if (reply->code != 0) {
             std::cout << "Fail: " << reply->code << std::endl;
+            this->free_connect(tnt);
+            return;
         } else {
             std::cout << "TypeOf: " << mp_typeof(*reply->data) << std::endl;
+
+            if (mp_typeof(*reply->data) != MP_ARRAY) {
+                std::cout << "Bad reply format" << std::endl;
+                this->free_connect(tnt);
+                return;
+            } else if (mp_decode_array(&reply->data) == 0) {
+                std::cout << "Zero" << std::endl;
+                this->free_connect(tnt);
+                return;
+            } else if (mp_decode_array(&reply->data) > 0) {
+                std::cout << "Bad reply format" << std::endl;
+                this->free_connect(tnt);
+                return;
+            }
+
+            const char *data = reply->data;
+            uint32_t len = mp_decode_array(&data);
+            if (len < 4) {
+                std::cout << "err len" << std::endl;
+                this->free_connect(tnt);
+                return;
+            }
+
+            uint32_t str_len = 0;
+
+            // sessid
+            if (mp_typeof(*data) != MP_STR) {
+                std::cout << "bad reply format" << std::endl;
+                this->free_connect(tnt);
+                return;
+            }
+            char* tSessid = (char *)mp_decode_str(&data, &str_len);
+            tSessid = strndup(tSessid, str_len);
+
+            std::cout << "F: sessid: " << tSessid << std::endl;
+
+            // user id
+            if (mp_typeof(*data) != MP_UINT) {
+                std::cout << "bad reply format" << std::endl;
+                this->free_connect(tnt);
+                return;
+            }
+            int userId = mp_decode_uint(&data);
+
+            std::cout << "F: useId: " << userId << std::endl;
         }
 
         tnt_reply_free(reply); // Free reply
