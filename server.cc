@@ -12,6 +12,8 @@
 
 #include "storage.cc"
 
+#define TARANTOOL_URI "127.0.0.1:3302"
+
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
@@ -33,11 +35,12 @@ public:
     Status Get(ServerContext* context, const GetRequest* request, GetResponse* response) override {
         std::cout << "receive message" << std::endl;
         std::cout << "sessid: " << request->sessid() << std::endl;
+
         response->set_userid(777);
         response->set_access_token("some-access-token");
         response->set_refresh_token("some-refrech-token");
 
-        Storage storage("127.0.0.1:33302");
+        Storage storage(TARANTOOL_URI);
         storage.getBySessId(request->sessid());
 
         return Status::OK;
@@ -64,6 +67,9 @@ void RunServer() {
 }
 
 int main (int argc, char** argv) {
+    Storage storage(TARANTOOL_URI);
+    storage.getBySessId("sdf");
+
     RunServer();
 
     return 0;

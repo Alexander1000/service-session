@@ -29,6 +29,8 @@ public:
             return;
         }
 
+        tnt_reload_schema(tnt);
+
         int spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
         if (spaceNo == -1) {
             std::cout << "error while get space no" << std::endl;
@@ -38,11 +40,28 @@ public:
 
         std::cout << "space no: " << spaceNo << std::endl;
 
+        int indexNo = tnt_get_indexno(tnt, spaceNo, "pk", strlen("pk"));
+        if (indexNo == -1) {
+            std::cout << "error while get index no" << std::endl;
+            this->free_connect(tnt);
+            return;
+        }
+
+        std::cout << "index no: " << indexNo << std::endl;
+
         struct tnt_stream *obj = NULL;
         obj = tnt_object(NULL);
         tnt_object_add_str(obj, sessId.c_str(), strlen(sessId.c_str()));
 
-        tnt_select(tnt, spaceNo, 0, 1, 0, 0, obj);
+        int limit = 1, offset = 0;
+
+        int bytes_number = tnt_select(tnt, spaceNo, indexNo, limit, offset, 0, obj);
+        if (bytes_number == -1) {
+            std::cout << "error: " << tnt_error(tnt) << std::endl;
+            std::cout << "error while read data" << std::endl;
+            this->free_connect(tnt);
+            return;
+        }
 
         struct tnt_reply * reply = tnt_reply_init(NULL); // Initialize reply
         tnt->read_reply(tnt, reply); // Read reply from server
