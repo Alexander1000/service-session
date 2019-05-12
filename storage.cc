@@ -31,7 +31,9 @@ public:
             return;
         }
 
-        tnt_reload_schema(tnt);
+        if (this->spaceNo == UNDEFINED_VALUE || this->indexNo == UNDEFINED_VALUE) {
+            tnt_reload_schema(tnt);
+        }
 
         if (this->spaceNo == UNDEFINED_VALUE) {
             int spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
