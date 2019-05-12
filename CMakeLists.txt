@@ -58,6 +58,7 @@ add_executable(
     service-session "server.cc"
     service.pb.cc
     service.grpc.pb.cc
+    storage.cc
 )
 
 target_link_libraries(service-session
