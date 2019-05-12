@@ -22,23 +22,25 @@ public:
         this->indexNo = UNDEFINED_VALUE;
     }
 
-    void getBySessId(std::string sessId) {
+    SessionData* getBySessId(std::string sessId) {
         std::cout << "GetBySessId called with: " << sessId << std::endl;
 
         struct tnt_stream* tnt = this->connect();
         if (tnt == NULL) {
             std::cout << "error on get connect in get sessid" << std::endl;
-            return;
+            return NULL;
         }
 
-        tnt_reload_schema(tnt);
+        if (this->spaceNo == UNDEFINED_VALUE || this->indexNo == UNDEFINED_VALUE) {
+            tnt_reload_schema(tnt);
+        }
 
         if (this->spaceNo == UNDEFINED_VALUE) {
             int spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
             if (spaceNo == -1) {
                 std::cout << "error while get space no" << std::endl;
                 this->free_connect(tnt);
-                return;
+                return NULL;
             }
             this->spaceNo = spaceNo;
         }
@@ -50,7 +52,7 @@ public:
             if (indexNo == -1) {
                 std::cout << "error while get index no" << std::endl;
                 this->free_connect(tnt);
-                return;
+                return NULL;
             }
             this->indexNo = indexNo;
         }
@@ -71,7 +73,7 @@ public:
             std::cout << "error: " << tnt_error(tnt) << std::endl;
             std::cout << "error while read data" << std::endl;
             this->free_connect(tnt);
-            return;
+            return NULL;
         }
 
         std::cout << "count bytes: " << bytes_number << std::endl;
@@ -86,83 +88,89 @@ public:
             }
             tnt_reply_free(reply); // Free reply
             this->free_connect(tnt);
-            return;
+            return NULL;
         }
 
         // unpack reply
 
         if (reply->code != 0) {
             std::cout << "Fail: " << reply->code << std::endl;
+            tnt_reply_free(reply); // Free reply
             this->free_connect(tnt);
-            return;
-        } else {
-            std::cout << "TypeOf: " << mp_typeof(*reply->data) << std::endl;
-
-            if (mp_typeof(*reply->data) != MP_ARRAY) {
-                std::cout << "Bad reply format (not array)" << std::endl;
-                this->free_connect(tnt);
-                return;
-            } else if (mp_decode_array(&reply->data) == 0) {
-                std::cout << "Zero" << std::endl;
-                this->free_connect(tnt);
-                return;
-            } else if (mp_decode_array(&reply->data) < 0) {
-                std::cout << "Bad reply format (decode size)" << std::endl;
-                this->free_connect(tnt);
-                return;
-            }
-
-            std::cout << "begin decode reply" << std::endl;
-
-            const char *data = reply->data;
-
-            uint32_t str_len = 0;
-
-            // sessid
-            if (mp_typeof(*data) != MP_STR) {
-                std::cout << "bad reply format(sessid) " << mp_typeof(*data) << std::endl;
-                this->free_connect(tnt);
-                return;
-            }
-            char* tSessid = (char *)mp_decode_str(&data, &str_len);
-            tSessid = strndup(tSessid, str_len);
-
-            std::cout << "F: sessid: " << tSessid << std::endl;
-
-            // user id
-            if (mp_typeof(*data) != MP_UINT) {
-                std::cout << "bad reply format(user-id)" << std::endl;
-                this->free_connect(tnt);
-                return;
-            }
-            int userId = mp_decode_uint(&data);
-
-            std::cout << "F: useId: " << userId << std::endl;
-
-            // access token
-            if (mp_typeof(*data) != MP_STR) {
-                std::cout << "bad reply format(a-token)" << mp_typeof(*data) << std::endl;
-                this->free_connect(tnt);
-                return;
-            }
-            char* tAccessToken = (char *)mp_decode_str(&data, &str_len);
-            tAccessToken = strndup(tAccessToken, str_len);
-            std::cout << "F: access token: " << tAccessToken << std::endl;
-
-            // refresh token
-            if (mp_typeof(*data) != MP_STR) {
-                std::cout << "bad reply format(r-token)" << std::endl;
-                this->free_connect(tnt);
-                return;
-            }
-            char* tRefreshToken = (char *)mp_decode_str(&data, &str_len);
-            tRefreshToken = strndup(tRefreshToken, str_len);
-            std::cout << "F: refresh token: " << tRefreshToken << std::endl;
+            return NULL;
         }
+
+        std::cout << "TypeOf: " << mp_typeof(*reply->data) << std::endl;
+
+        if (mp_typeof(*reply->data) != MP_ARRAY) {
+            std::cout << "Bad reply format (not array)" << std::endl;
+            this->free_connect(tnt);
+            return NULL;
+        } else if (mp_decode_array(&reply->data) == 0) {
+            // session data not found
+            std::cout << "Zero" << std::endl;
+            this->free_connect(tnt);
+            return NULL;
+        } else if (mp_decode_array(&reply->data) < 0) {
+            std::cout << "Bad reply format (decode size)" << std::endl;
+            this->free_connect(tnt);
+            return NULL;
+        }
+
+        std::cout << "begin decode reply" << std::endl;
+
+        const char *data = reply->data;
+
+        uint32_t str_len = 0;
+
+        // sessid
+        if (mp_typeof(*data) != MP_STR) {
+            std::cout << "bad reply format(sessid) " << mp_typeof(*data) << std::endl;
+            this->free_connect(tnt);
+            return NULL;
+        }
+        char* tSessid = (char *)mp_decode_str(&data, &str_len);
+        tSessid = strndup(tSessid, str_len);
+
+        std::cout << "F: sessid: " << tSessid << std::endl;
+
+        // user id
+        if (mp_typeof(*data) != MP_UINT) {
+            std::cout << "bad reply format(user-id)" << std::endl;
+            this->free_connect(tnt);
+            return NULL;
+        }
+        int userId = mp_decode_uint(&data);
+
+        std::cout << "F: useId: " << userId << std::endl;
+
+        // access token
+        if (mp_typeof(*data) != MP_STR) {
+            std::cout << "bad reply format(a-token)" << mp_typeof(*data) << std::endl;
+            this->free_connect(tnt);
+            return NULL;
+        }
+        char* tAccessToken = (char *)mp_decode_str(&data, &str_len);
+        tAccessToken = strndup(tAccessToken, str_len);
+        std::cout << "F: access token: " << tAccessToken << std::endl;
+
+        // refresh token
+        if (mp_typeof(*data) != MP_STR) {
+            std::cout << "bad reply format(r-token)" << std::endl;
+            this->free_connect(tnt);
+            return NULL;
+        }
+        char* tRefreshToken = (char *)mp_decode_str(&data, &str_len);
+        tRefreshToken = strndup(tRefreshToken, str_len);
+        std::cout << "F: refresh token: " << tRefreshToken << std::endl;
 
         tnt_reply_free(reply); // Free reply
 
         this->free_connect(tnt);
+
+        SessionData* sessionData = (SessionData*) malloc(sizeof(SessionData));
+        sessionData = new SessionData(std::string(tSessid), userId, std::string(tAccessToken), std::string(tRefreshToken));
+        return sessionData;
     }
 private:
     std::string address;
