@@ -168,8 +168,9 @@ public:
 
         this->free_connect(tnt);
 
-        SessionData sessData(std::string(tSessid), userId, std::string(tAccessToken), std::string(tRefreshToken));
-        return &sessData;
+        SessionData* sessionData = (SessionData*) malloc(sizeof(SessionData));
+        sessionData = new SessionData(std::string(tSessid), userId, std::string(tAccessToken), std::string(tRefreshToken));
+        return sessionData;
     }
 private:
     std::string address;
