@@ -4,6 +4,7 @@
 ### Added
   - add storage class
   - integration with tarantool storage (unpack result)
+  - return matched data from tarantool to response
 
 ## 2019-05-09
 ### Changed
