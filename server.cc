@@ -10,6 +10,7 @@
 
 #include "service.grpc.pb.h"
 
+#include "session_data.cc"
 #include "storage.cc"
 
 #define TARANTOOL_URI "127.0.0.1:3302"
@@ -41,7 +42,12 @@ public:
         response->set_refresh_token("some-refrech-token");
 
         Storage storage(TARANTOOL_URI);
-        storage.getBySessId(request->sessid());
+        SessionData *sessionData = storage.getBySessId(request->sessid());
+        if (sessionData != NULL) {
+            response->set_userid(sessionData->userId);
+            response->set_access_token(sessionData->accessToken);
+            response->set_refresh_token(sessionData->refreshToken);
+        }
 
         return Status::OK;
     }
