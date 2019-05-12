@@ -117,17 +117,34 @@ public:
 
             uint32_t str_len = 0;
 
+            std::string sid;
+
             // sessid
-            if (mp_typeof(*data) != MP_STR) {
-                std::cout << "bad reply format(sessid) " << mp_typeof(*data) << std::endl;
-                this->free_connect(tnt);
-                return;
+            for (uint32_t i = 0; i < len; i++) {
+                if (mp_typeof(*data) != MP_UINT) {
+                    std::cout << "Fiasko wrong format" << std::endl;
+                    this->free_connect(tnt);
+                    return;
+                }
+
+                int tInt = mp_decode_uint(&data);
+                // std::cout << "[Unpack] int: " << tInt << std::endl;
+                sid += tInt;
             }
-            char* tSessid = (char *)mp_decode_str(&data, &str_len);
-            tSessid = strndup(tSessid, str_len);
 
-            std::cout << "F: sessid: " << tSessid << std::endl;
+            std::cout << "sessid: " << sid << std::endl;
 
+            // sessid
+//            if (mp_typeof(*data) != MP_STR) {
+//                std::cout << "bad reply format(sessid) " << mp_typeof(*data) << std::endl;
+//                this->free_connect(tnt);
+//                return;
+//            }
+//            char* tSessid = (char *)mp_decode_str(&data, &str_len);
+//            tSessid = strndup(tSessid, str_len);
+//
+//            std::cout << "F: sessid: " << tSessid << std::endl;
+//
             // user id
             if (mp_typeof(*data) != MP_UINT) {
                 std::cout << "bad reply format(user-id)" << std::endl;
@@ -135,9 +152,9 @@ public:
                 return;
             }
             int userId = mp_decode_uint(&data);
-
+//
             std::cout << "F: useId: " << userId << std::endl;
-
+//
             // access token
             if (mp_typeof(*data) != MP_STR) {
                 std::cout << "bad reply format(a-token)" << mp_typeof(*data) << std::endl;
@@ -147,7 +164,7 @@ public:
             char* tAccessToken = (char *)mp_decode_str(&data, &str_len);
             tAccessToken = strndup(tAccessToken, str_len);
             std::cout << "F: access token: " << tAccessToken << std::endl;
-
+//
             // refresh token
             if (mp_typeof(*data) != MP_STR) {
                 std::cout << "bad reply format(r-token)" << std::endl;
