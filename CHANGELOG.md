@@ -1,5 +1,10 @@
 # Changelog service-session
 
+## 2019-05-12
+### Added
+  - add storage class
+  - integration with tarantool storage (unpack result)
+
 ## 2019-05-09
 ### Changed
   - include tarantool library

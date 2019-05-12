@@ -67,9 +67,6 @@ void RunServer() {
 }
 
 int main (int argc, char** argv) {
-    Storage storage(TARANTOOL_URI);
-    storage.getBySessId("sdf");
-
     RunServer();
 
     return 0;
