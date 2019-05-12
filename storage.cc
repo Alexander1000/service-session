@@ -11,13 +11,15 @@
 
 #include <msgpuck.h>
 
+#define UNDEFINED_VALUE -1
+
 class Storage
 {
 public:
     Storage(std::string address) {
         this->address = address;
-        this->spaceNo = 0;
-        this->indexNo = 0;
+        this->spaceNo = UNDEFINED_VALUE;
+        this->indexNo = UNDEFINED_VALUE;
     }
 
     void getBySessId(std::string sessId) {
@@ -31,16 +33,19 @@ public:
 
         tnt_reload_schema(tnt);
 
-        int spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
-        if (spaceNo == -1) {
-            std::cout << "error while get space no" << std::endl;
-            this->free_connect(tnt);
-            return;
+        if (this->spaceNo == UNDEFINED_VALUE) {
+            this->spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
+            if (this->spaceNo == -1) {
+                this->spaceNo = UNDEFINED_VALUE;
+                std::cout << "error while get space no" << std::endl;
+                this->free_connect(tnt);
+                return;
+            }
         }
 
-        std::cout << "space no: " << spaceNo << std::endl;
+        std::cout << "space no: " << this->spaceNo << std::endl;
 
-        int indexNo = tnt_get_indexno(tnt, spaceNo, "pk", strlen("pk"));
+        int indexNo = tnt_get_indexno(tnt, this->spaceNo, "pk", strlen("pk"));
         if (indexNo == -1) {
             std::cout << "error while get index no" << std::endl;
             this->free_connect(tnt);
@@ -58,7 +63,7 @@ public:
 
         int limit = 1, offset = 0;
 
-        int bytes_number = tnt_select(tnt, spaceNo, indexNo, limit, offset, TNT_ITER_EQ, obj);
+        int bytes_number = tnt_select(tnt, this->spaceNo, indexNo, limit, offset, TNT_ITER_EQ, obj);
         if (bytes_number == -1) {
             std::cout << "error: " << tnt_error(tnt) << std::endl;
             std::cout << "error while read data" << std::endl;
@@ -107,44 +112,20 @@ public:
             std::cout << "begin decode reply" << std::endl;
 
             const char *data = reply->data;
-            uint32_t len = mp_decode_array(&data);
-            std::cout << "len decoded: " << len << std::endl;
-            if (len < 2) {
-                std::cout << "err len: " << len << std::endl;
-                this->free_connect(tnt);
-                return;
-            }
 
             uint32_t str_len = 0;
 
-            std::string sid;
-
             // sessid
-            for (uint32_t i = 0; i < len; i++) {
-                if (mp_typeof(*data) != MP_UINT) {
-                    std::cout << "Fiasko wrong format" << std::endl;
-                    this->free_connect(tnt);
-                    return;
-                }
-
-                int tInt = mp_decode_uint(&data);
-                // std::cout << "[Unpack] int: " << tInt << std::endl;
-                sid += tInt;
+            if (mp_typeof(*data) != MP_STR) {
+                std::cout << "bad reply format(sessid) " << mp_typeof(*data) << std::endl;
+                this->free_connect(tnt);
+                return;
             }
+            char* tSessid = (char *)mp_decode_str(&data, &str_len);
+            tSessid = strndup(tSessid, str_len);
 
-            std::cout << "sessid: " << sid << std::endl;
+            std::cout << "F: sessid: " << tSessid << std::endl;
 
-            // sessid
-//            if (mp_typeof(*data) != MP_STR) {
-//                std::cout << "bad reply format(sessid) " << mp_typeof(*data) << std::endl;
-//                this->free_connect(tnt);
-//                return;
-//            }
-//            char* tSessid = (char *)mp_decode_str(&data, &str_len);
-//            tSessid = strndup(tSessid, str_len);
-//
-//            std::cout << "F: sessid: " << tSessid << std::endl;
-//
             // user id
             if (mp_typeof(*data) != MP_UINT) {
                 std::cout << "bad reply format(user-id)" << std::endl;
@@ -152,9 +133,9 @@ public:
                 return;
             }
             int userId = mp_decode_uint(&data);
-//
+
             std::cout << "F: useId: " << userId << std::endl;
-//
+
             // access token
             if (mp_typeof(*data) != MP_STR) {
                 std::cout << "bad reply format(a-token)" << mp_typeof(*data) << std::endl;
@@ -164,7 +145,7 @@ public:
             char* tAccessToken = (char *)mp_decode_str(&data, &str_len);
             tAccessToken = strndup(tAccessToken, str_len);
             std::cout << "F: access token: " << tAccessToken << std::endl;
-//
+
             // refresh token
             if (mp_typeof(*data) != MP_STR) {
                 std::cout << "bad reply format(r-token)" << std::endl;
@@ -206,41 +187,5 @@ private:
     void free_connect(struct tnt_stream* tnt) {
         tnt_close(tnt);
         tnt_stream_free(tnt); // Close connection and free stream object
-    }
-
-    int getSpaceNo() {
-        if (this->spaceNo > 0) {
-            return this->spaceNo;
-        }
-
-        struct tnt_stream* tnt = this->connect();
-        if (tnt == NULL) {
-            std::cout << "error on get connect in getSpaceNo" << std::endl;
-            return -1;
-        }
-
-        this->spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
-
-        this->free_connect(tnt);
-
-        return this->spaceNo;
-    }
-
-    int getIndexNo() {
-        if (this->indexNo > 0) {
-            return this->indexNo;
-        }
-
-        struct tnt_stream* tnt = this->connect();
-        if (tnt == NULL) {
-            std::cout << "error on get connect in getIndexNo" << std::endl;
-            return -1;
-        }
-
-        this->indexNo = tnt_get_indexno(tnt, this->getSpaceNo(), "pk", 2);
-
-        this->free_connect(tnt);
-
-        return this->indexNo;
     }
 };
