@@ -37,16 +37,17 @@ public:
         std::cout << "receive message" << std::endl;
         std::cout << "sessid: " << request->sessid() << std::endl;
 
-        response->set_userid(777);
-        response->set_access_token("some-access-token");
-        response->set_refresh_token("some-refrech-token");
-
         Storage storage(TARANTOOL_URI);
         SessionData *sessionData = storage.getBySessId(request->sessid());
+
         if (sessionData != NULL) {
             response->set_userid(sessionData->userId);
             response->set_access_token(sessionData->accessToken);
             response->set_refresh_token(sessionData->refreshToken);
+        } else {
+            response->set_userid(777);
+            response->set_access_token("some-access-token");
+            response->set_refresh_token("some-refrech-token");
         }
 
         return Status::OK;
