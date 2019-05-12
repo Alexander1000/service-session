@@ -34,25 +34,28 @@ public:
         tnt_reload_schema(tnt);
 
         if (this->spaceNo == UNDEFINED_VALUE) {
-            this->spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
-            if (this->spaceNo == -1) {
-                this->spaceNo = UNDEFINED_VALUE;
+            int spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
+            if (spaceNo == -1) {
                 std::cout << "error while get space no" << std::endl;
                 this->free_connect(tnt);
                 return;
             }
+            this->spaceNo = spaceNo;
         }
 
         std::cout << "space no: " << this->spaceNo << std::endl;
 
-        int indexNo = tnt_get_indexno(tnt, this->spaceNo, "pk", strlen("pk"));
-        if (indexNo == -1) {
-            std::cout << "error while get index no" << std::endl;
-            this->free_connect(tnt);
-            return;
+        if (this->indexNo == UNDEFINED_VALUE) {
+            int indexNo = tnt_get_indexno(tnt, this->spaceNo, "pk", strlen("pk"));
+            if (indexNo == -1) {
+                std::cout << "error while get index no" << std::endl;
+                this->free_connect(tnt);
+                return;
+            }
+            this->indexNo = indexNo;
         }
 
-        std::cout << "index no: " << indexNo << std::endl;
+        std::cout << "index no: " << this->indexNo << std::endl;
 
         struct tnt_stream *obj = NULL;
         obj = tnt_object(NULL);
@@ -63,7 +66,7 @@ public:
 
         int limit = 1, offset = 0;
 
-        int bytes_number = tnt_select(tnt, this->spaceNo, indexNo, limit, offset, TNT_ITER_EQ, obj);
+        int bytes_number = tnt_select(tnt, this->spaceNo, this->indexNo, limit, offset, TNT_ITER_EQ, obj);
         if (bytes_number == -1) {
             std::cout << "error: " << tnt_error(tnt) << std::endl;
             std::cout << "error while read data" << std::endl;
