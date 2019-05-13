@@ -78,7 +78,7 @@ public:
 
         std::cout << "count bytes: " << bytes_number << std::endl;
 
-        struct tnt_reply * reply = tnt_reply_init(NULL); // Initialize reply
+        struct tnt_reply* reply = tnt_reply_init(NULL); // Initialize reply
 
         // Read reply from server
         if (tnt->read_reply(tnt, reply) == -1) {
@@ -119,7 +119,7 @@ public:
 
         std::cout << "begin decode reply" << std::endl;
 
-        const char *data = reply->data;
+        const char* data = reply->data;
 
         uint32_t str_len = 0;
 
@@ -174,6 +174,11 @@ public:
     }
 
     int save(SessionData *sessionData) {
+        struct tnt_stream* conn = this->connect();
+        if (conn == NULL) {
+            return -1;
+        }
+        this->free_connect(conn);
         return 0;
     }
 private:
@@ -184,7 +189,7 @@ private:
     int indexNo;
 
     struct tnt_stream* connect() {
-        struct tnt_stream *tnt = tnt_net(NULL); // Allocating stream
+        struct tnt_stream* tnt = tnt_net(NULL); // Allocating stream
         std::cout << "connection to " << this->address.c_str() << std::endl;
         tnt_set(tnt, TNT_OPT_URI, this->address.c_str()); // Setting URI
         tnt_set(tnt, TNT_OPT_SEND_BUF, 0); // Disable buffering for send
