@@ -182,6 +182,10 @@ public:
         }
 
         if (this->spaceNo == UNDEFINED_VALUE) {
+            tnt_reload_schema(tnt);
+        }
+
+        if (this->spaceNo == UNDEFINED_VALUE) {
             int spaceNo = tnt_get_spaceno(conn, TARANTOOL_SPACE_USER_SESSION, strlen(TARANTOOL_SPACE_USER_SESSION));
             if (spaceNo == -1) {
                 std::cout << "error while get space no" << std::endl;
