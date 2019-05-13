@@ -29,8 +29,10 @@ using session::SessionService;
 class ServiceSessionServer final : public SessionService::Service {
 public:
     Status Save(ServerContext* context, const SaveRequest* request, SaveResponse* response) override {
-        // implement me
-        return Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+        Storage storage(TARANTOOL_URI);
+        SessionData *sessionData = storage.getById(request->sessid());
+        int result = storage.save(request);
+        return Status::OK;
     }
 
     Status Get(ServerContext* context, const GetRequest* request, GetResponse* response) override {
