@@ -4,6 +4,7 @@
 ### Added
   - add save request
   - rename `getBySessId` -> `getById` in storage
+  - implement save tuple to tarantool
 
 ## 2019-05-12
 ### Added
