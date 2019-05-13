@@ -1,5 +1,10 @@
 # Changelog service-session
 
+## 2019-04
+### Added
+  - add save request
+  - rename `getBySessId` -> `getById` in storage
+
 ## 2019-05-12
 ### Added
   - add storage class

@@ -38,7 +38,7 @@ public:
         std::cout << "sessid: " << request->sessid() << std::endl;
 
         Storage storage(TARANTOOL_URI);
-        SessionData *sessionData = storage.getBySessId(request->sessid());
+        SessionData *sessionData = storage.getById(request->sessid());
 
         if (sessionData != NULL) {
             response->set_userid(sessionData->userId);

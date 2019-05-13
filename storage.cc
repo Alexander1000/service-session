@@ -22,7 +22,7 @@ public:
         this->indexNo = UNDEFINED_VALUE;
     }
 
-    SessionData* getBySessId(std::string sessId) {
+    SessionData* getById(std::string sessId) {
         std::cout << "GetBySessId called with: " << sessId << std::endl;
 
         struct tnt_stream* tnt = this->connect();
@@ -171,6 +171,10 @@ public:
         SessionData* sessionData = (SessionData*) malloc(sizeof(SessionData));
         sessionData = new SessionData(std::string(tSessid), userId, std::string(tAccessToken), std::string(tRefreshToken));
         return sessionData;
+    }
+
+    int save(::session::SaveRequest *request) {
+        return 0;
     }
 private:
     std::string address;
