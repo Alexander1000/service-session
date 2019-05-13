@@ -173,7 +173,7 @@ public:
         return sessionData;
     }
 
-    int save(::session::SaveRequest *request) {
+    int save(SessionData *sessionData) {
         return 0;
     }
 private:

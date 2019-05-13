@@ -30,8 +30,8 @@ class ServiceSessionServer final : public SessionService::Service {
 public:
     Status Save(ServerContext* context, const SaveRequest* request, SaveResponse* response) override {
         Storage storage(TARANTOOL_URI);
-        SessionData *sessionData = storage.getById(request->sessid());
-        int result = storage.save(request);
+        SessionData sessionData(request->sessid(), request->userid(), request->access_token(), request->refresh_token());
+        int result = storage.save(&sessionData);
         return Status::OK;
     }
 
