@@ -196,6 +196,10 @@ public:
         }
 
         struct tnt_stream *tuple = tnt_object(NULL);
+        tnt_object_add_str(tuple, sessionData->sessionId.c_str(), strlen(sessionData->sessionId.c_str()));
+        tnt_object_add_int(tuple, sessionData->userId);
+        tnt_object_add_str(tuple, sessionData->accessToken.c_str(), strlen(sessionData->accessToken.c_str()));
+        tnt_object_add_str(tuple, sessionData->refreshToken.c_str(), strlen(sessionData->refreshToken.c_str()));
         tnt_replace(conn, this->spaceNo, tuple);
 
         this->free_connect(conn);
