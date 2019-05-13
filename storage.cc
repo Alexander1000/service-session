@@ -13,6 +13,8 @@
 
 #define UNDEFINED_VALUE -1
 
+#define TARANTOOL_SPACE_USER_SESSION "us"
+
 class Storage
 {
 public:
@@ -36,7 +38,7 @@ public:
         }
 
         if (this->spaceNo == UNDEFINED_VALUE) {
-            int spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
+            int spaceNo = tnt_get_spaceno(tnt, TARANTOOL_SPACE_USER_SESSION, strlen(TARANTOOL_SPACE_USER_SESSION));
             if (spaceNo == -1) {
                 std::cout << "error while get space no" << std::endl;
                 this->free_connect(tnt);
@@ -178,6 +180,17 @@ public:
         if (conn == NULL) {
             return -1;
         }
+
+        if (this->spaceNo == UNDEFINED_VALUE) {
+            int spaceNo = tnt_get_spaceno(conn, TARANTOOL_SPACE_USER_SESSION, strlen(TARANTOOL_SPACE_USER_SESSION));
+            if (spaceNo == -1) {
+                std::cout << "error while get space no" << std::endl;
+                this->free_connect(conn);
+                return -1;
+            }
+            this->spaceNo = spaceNo;
+        }
+
         this->free_connect(conn);
         return 0;
     }
