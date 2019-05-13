@@ -182,7 +182,7 @@ public:
         }
 
         if (this->spaceNo == UNDEFINED_VALUE) {
-            tnt_reload_schema(tnt);
+            tnt_reload_schema(conn);
         }
 
         if (this->spaceNo == UNDEFINED_VALUE) {
@@ -194,6 +194,9 @@ public:
             }
             this->spaceNo = spaceNo;
         }
+
+        struct tnt_stream *tuple = tnt_object(NULL);
+        tnt_replace(conn, this->spaceNo, tuple);
 
         this->free_connect(conn);
         return 0;
