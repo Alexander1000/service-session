@@ -196,11 +196,22 @@ public:
         }
 
         struct tnt_stream *tuple = tnt_object(NULL);
+
+        tnt_object_reset(tuple);
+        tnt_object_add_array(tuple, 4);
+
         tnt_object_add_str(tuple, sessionData->sessionId.c_str(), strlen(sessionData->sessionId.c_str()));
         tnt_object_add_int(tuple, sessionData->userId);
         tnt_object_add_str(tuple, sessionData->accessToken.c_str(), strlen(sessionData->accessToken.c_str()));
         tnt_object_add_str(tuple, sessionData->refreshToken.c_str(), strlen(sessionData->refreshToken.c_str()));
-        tnt_replace(conn, this->spaceNo, tuple);
+
+        ssize_t bytes_count = tnt_insert(conn, this->spaceNo, tuple);
+        if (bytes_count == -1) {
+            std::cout << "error: " << tnt_error(conn) << std::endl;
+            return -1;
+        }
+
+        std::cout << "wrote bytes: " << bytes_count << std::endl;
 
         this->free_connect(conn);
         return 0;
