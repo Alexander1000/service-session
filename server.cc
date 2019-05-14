@@ -29,8 +29,10 @@ using session::SessionService;
 class ServiceSessionServer final : public SessionService::Service {
 public:
     Status Save(ServerContext* context, const SaveRequest* request, SaveResponse* response) override {
-        // implement me
-        return Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+        Storage storage(TARANTOOL_URI);
+        SessionData sessionData(request->sessid(), request->userid(), request->access_token(), request->refresh_token());
+        int result = storage.save(&sessionData);
+        return Status::OK;
     }
 
     Status Get(ServerContext* context, const GetRequest* request, GetResponse* response) override {
@@ -38,7 +40,7 @@ public:
         std::cout << "sessid: " << request->sessid() << std::endl;
 
         Storage storage(TARANTOOL_URI);
-        SessionData *sessionData = storage.getBySessId(request->sessid());
+        SessionData *sessionData = storage.getById(request->sessid());
 
         if (sessionData != NULL) {
             response->set_userid(sessionData->userId);

@@ -1,5 +1,11 @@
 # Changelog service-session
 
+## 2019-04-14
+### Added
+  - add save request
+  - rename `getBySessId` -> `getById` in storage
+  - implement save tuple to tarantool
+
 ## 2019-05-12
 ### Added
   - add storage class

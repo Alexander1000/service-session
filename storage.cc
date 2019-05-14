@@ -13,6 +13,8 @@
 
 #define UNDEFINED_VALUE -1
 
+#define TARANTOOL_SPACE_USER_SESSION "us"
+
 class Storage
 {
 public:
@@ -22,7 +24,7 @@ public:
         this->indexNo = UNDEFINED_VALUE;
     }
 
-    SessionData* getBySessId(std::string sessId) {
+    SessionData* getById(std::string sessId) {
         std::cout << "GetBySessId called with: " << sessId << std::endl;
 
         struct tnt_stream* tnt = this->connect();
@@ -36,7 +38,7 @@ public:
         }
 
         if (this->spaceNo == UNDEFINED_VALUE) {
-            int spaceNo = tnt_get_spaceno(tnt, "us", strlen("us"));
+            int spaceNo = tnt_get_spaceno(tnt, TARANTOOL_SPACE_USER_SESSION, strlen(TARANTOOL_SPACE_USER_SESSION));
             if (spaceNo == -1) {
                 std::cout << "error while get space no" << std::endl;
                 this->free_connect(tnt);
@@ -78,7 +80,7 @@ public:
 
         std::cout << "count bytes: " << bytes_number << std::endl;
 
-        struct tnt_reply * reply = tnt_reply_init(NULL); // Initialize reply
+        struct tnt_reply* reply = tnt_reply_init(NULL); // Initialize reply
 
         // Read reply from server
         if (tnt->read_reply(tnt, reply) == -1) {
@@ -119,7 +121,7 @@ public:
 
         std::cout << "begin decode reply" << std::endl;
 
-        const char *data = reply->data;
+        const char* data = reply->data;
 
         uint32_t str_len = 0;
 
@@ -172,6 +174,48 @@ public:
         sessionData = new SessionData(std::string(tSessid), userId, std::string(tAccessToken), std::string(tRefreshToken));
         return sessionData;
     }
+
+    int save(SessionData *sessionData) {
+        struct tnt_stream* conn = this->connect();
+        if (conn == NULL) {
+            return -1;
+        }
+
+        if (this->spaceNo == UNDEFINED_VALUE) {
+            tnt_reload_schema(conn);
+        }
+
+        if (this->spaceNo == UNDEFINED_VALUE) {
+            int spaceNo = tnt_get_spaceno(conn, TARANTOOL_SPACE_USER_SESSION, strlen(TARANTOOL_SPACE_USER_SESSION));
+            if (spaceNo == -1) {
+                std::cout << "error while get space no" << std::endl;
+                this->free_connect(conn);
+                return -1;
+            }
+            this->spaceNo = spaceNo;
+        }
+
+        struct tnt_stream *tuple = tnt_object(NULL);
+
+        tnt_object_reset(tuple);
+        tnt_object_add_array(tuple, 4);
+
+        tnt_object_add_str(tuple, sessionData->sessionId.c_str(), strlen(sessionData->sessionId.c_str()));
+        tnt_object_add_int(tuple, sessionData->userId);
+        tnt_object_add_str(tuple, sessionData->accessToken.c_str(), strlen(sessionData->accessToken.c_str()));
+        tnt_object_add_str(tuple, sessionData->refreshToken.c_str(), strlen(sessionData->refreshToken.c_str()));
+
+        ssize_t bytes_count = tnt_insert(conn, this->spaceNo, tuple);
+        if (bytes_count == -1) {
+            std::cout << "error: " << tnt_error(conn) << std::endl;
+            return -1;
+        }
+
+        std::cout << "wrote bytes: " << bytes_count << std::endl;
+
+        this->free_connect(conn);
+        return 0;
+    }
 private:
     std::string address;
 
@@ -180,7 +224,7 @@ private:
     int indexNo;
 
     struct tnt_stream* connect() {
-        struct tnt_stream *tnt = tnt_net(NULL); // Allocating stream
+        struct tnt_stream* tnt = tnt_net(NULL); // Allocating stream
         std::cout << "connection to " << this->address.c_str() << std::endl;
         tnt_set(tnt, TNT_OPT_URI, this->address.c_str()); // Setting URI
         tnt_set(tnt, TNT_OPT_SEND_BUF, 0); // Disable buffering for send
