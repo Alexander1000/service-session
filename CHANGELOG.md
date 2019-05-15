@@ -1,5 +1,9 @@
 # Changelog service-session
 
+## 2019-04-15
+### Changed
+  - `tnt_insert` exchange on `tnt_replace` for save tuple
+
 ## 2019-04-14
 ### Added
   - add save request
