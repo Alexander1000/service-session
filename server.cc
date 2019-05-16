@@ -83,7 +83,7 @@ int main (int argc, char** argv) {
         std::cout << "How usage it" << std::endl;
         return 0;
     }
-    
+
     RunServer();
 
     return 0;
