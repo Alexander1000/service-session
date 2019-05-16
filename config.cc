@@ -20,9 +20,11 @@ public:
                 this->is_help = true;
                 continue;
             }
-
-            std::cout << "param: " << argv[i] << std::endl;
         }
+    }
+
+    bool isHelp() {
+        return this->is_help;
     }
 private:
     bool is_help;

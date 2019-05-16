@@ -78,6 +78,12 @@ void RunServer() {
 
 int main (int argc, char** argv) {
     Config config(argc, argv);
+
+    if (config.isHelp()) {
+        std::cout << "How usage it" << std::endl;
+        return 0;
+    }
+    
     RunServer();
 
     return 0;
