@@ -74,7 +74,21 @@ private:
             if (obj->find("tarantool") != obj->end()) {
                 JsonStreamAnalyzer::Element* tarantoolConfig = obj->at("tarantool");
                 if (tarantoolConfig->getType() == ELEMENT_TYPE_OBJECT) {
-
+                    JsonObject* tarantoolObject = (JsonObject*) tarantoolConfig->getData();
+                    if (tarantoolObject->find("host") != tarantoolObject->end()) {
+                        JsonStreamAnalyzer::Element* hostTarantool = tarantoolObject->at("host");
+                        if (hostTarantool->getType() == ELEMENT_TYPE_TEXT) {
+                            std::string *host = (std::string*) hostTarantool->getData();
+                            this->tarantoolConfig->host = *host;
+                        }
+                    }
+                    if (tarantoolObject->find("port") != tarantoolObject->end()) {
+                        JsonStreamAnalyzer::Element* portTarantool = tarantoolObject->at("port");
+                        if (portTarantool->getType() == ELEMENT_TYPE_NUMERIC) {
+                            std::string *sPort = (std::string*) portTarantool->getData();
+                            this->tarantoolConfig->port = atoi(sPort->c_str());
+                        }
+                    }
                 }
             }
         }
