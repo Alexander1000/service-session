@@ -12,8 +12,17 @@ public:
         this->host = "127.0.0.1";
         this->port = 3301;
     }
+
     std::string host;
     int port;
+
+    char* getUri() {
+        int n_size = strlen(this->host.c_str()) + 2 + 6;
+        char* uri = new char[n_size];
+        memset(uri, 0, sizeof(char) * n_size);
+        std::sprintf(uri, "%s:%d", this->host.c_str(), this->port);
+        return uri;
+    }
 };
 
 class Config
