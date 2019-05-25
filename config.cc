@@ -4,6 +4,8 @@
 
 #include <json-stream-analyzer.h>
 
+typedef std::map<std::string, JsonStreamAnalyzer::Element *> JsonObject;
+
 class TarantoolConfig {
 public:
     TarantoolConfig() {
@@ -68,7 +70,13 @@ private:
         JsonStreamAnalyzer::Element* element = decoder.decode();
 
         if (element->getType() == ELEMENT_TYPE_OBJECT) {
-            std::map<std::string, JsonStreamAnalyzer::Element *>* obj = (std::map<std::string, JsonStreamAnalyzer::Element *>*) element->getData();
+            JsonObject* obj = (JsonObject*) element->getData();
+            if (obj->find("tarantool") != obj->end()) {
+                JsonStreamAnalyzer::Element* tarantoolConfig = obj->at("tarantool");
+                if (tarantoolConfig->getType() == ELEMENT_TYPE_OBJECT) {
+
+                }
+            }
         }
     }
 };
