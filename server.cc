@@ -5,6 +5,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <stdlib.h>
 
 #include <grpcpp/grpcpp.h>
 
@@ -29,6 +30,10 @@ using session::SessionService;
 
 class ServiceSessionServer final : public SessionService::Service {
 public:
+    ServiceSessionServer(Config* config) {
+        this->config = config;
+    }
+
     Status Save(ServerContext* context, const SaveRequest* request, SaveResponse* response) override {
         Storage storage(TARANTOOL_URI);
         SessionData sessionData(request->sessid(), request->userid(), request->access_token(), request->refresh_token());
@@ -40,8 +45,8 @@ public:
         std::cout << "receive message" << std::endl;
         std::cout << "sessid: " << request->sessid() << std::endl;
 
-        Storage storage(TARANTOOL_URI);
-        SessionData *sessionData = storage.getById(request->sessid());
+        Storage* storage = this->getStorage();
+        SessionData *sessionData = storage->getById(request->sessid());
 
         if (sessionData != NULL) {
             response->set_userid(sessionData->userId);
@@ -55,11 +60,21 @@ public:
 
         return Status::OK;
     }
+
+private:
+    Storage* getStorage() {
+        TarantoolConfig* tConf = this->config->getTarantoolConfig();
+        std::string tarantoolUri = tConf->host + ":3301";
+        Storage* storage = new Storage(tarantoolUri);
+        return storage;
+    }
+
+    Config* config;
 };
 
-void RunServer() {
+void RunServer(Config* config) {
     std::string server_address("0.0.0.0:50051");
-    ServiceSessionServer service;
+    ServiceSessionServer service(config);
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.
@@ -84,7 +99,7 @@ int main (int argc, char** argv) {
         return 0;
     }
 
-    RunServer();
+    RunServer(&config);
 
     return 0;
 }

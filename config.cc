@@ -54,6 +54,11 @@ public:
     bool isHelp() {
         return this->is_help;
     }
+
+    TarantoolConfig* getTarantoolConfig()
+    {
+        return this->tarantoolConfig;
+    }
 private:
     bool is_help;
 
