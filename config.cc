@@ -1,6 +1,8 @@
 #include <iostream>
 #include <string>
 
+#include <json-stream-analyzer.h>
+
 class Config
 {
 public:
@@ -20,6 +22,17 @@ public:
                 this->is_help = true;
                 continue;
             }
+
+            if (paramName.compare("-c") == 0 || paramName.compare("--config") == 0) {
+                if (i + 1 == argc) {
+                    // todo: error missed argument value
+                    continue;
+                }
+                std::string paramValue(argv[i+1]);
+                this->parse_config_file(paramValue);
+                i++;
+                continue;
+            }
         }
     }
 
@@ -28,4 +41,11 @@ public:
     }
 private:
     bool is_help;
+
+    void parse_config_file(std::string file_name)
+    {
+        JsonStreamAnalyzer::Buffer::IOFileReader fileReader(file_name.c_str());
+        JsonStreamAnalyzer::Stream stream(&fileReader);
+        JsonStreamAnalyzer::Decoder decoder(&stream);
+    }
 };
