@@ -6,4 +6,3 @@ rm -f CMakeCache.txt
 
 cmake .
 make
-./service-session -c etc/config.json

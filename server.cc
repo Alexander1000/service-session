@@ -35,9 +35,9 @@ public:
     }
 
     Status Save(ServerContext* context, const SaveRequest* request, SaveResponse* response) override {
-        Storage storage(TARANTOOL_URI);
+        Storage* storage = this->getStorage();
         SessionData sessionData(request->sessid(), request->userid(), request->access_token(), request->refresh_token());
-        int result = storage.save(&sessionData);
+        int result = storage->save(&sessionData);
         return Status::OK;
     }
 
