@@ -1,7 +1,18 @@
 #include <iostream>
 #include <string>
+#include <map>
 
 #include <json-stream-analyzer.h>
+
+class TarantoolConfig {
+public:
+    TarantoolConfig() {
+        this->host = "127.0.0.1";
+        this->port = 3301;
+    }
+    std::string host;
+    int port;
+};
 
 class Config
 {
@@ -9,6 +20,8 @@ public:
     Config(int argc, char** argv) {
         // initialize defaults
         this->is_help = false;
+
+        this->tarantoolConfig = new TarantoolConfig;
 
         if (argc == 1) {
             // run without params
@@ -42,10 +55,20 @@ public:
 private:
     bool is_help;
 
+    TarantoolConfig* tarantoolConfig;
+
     void parse_config_file(std::string file_name)
     {
+        // todo: file analyze (json/yml/cfg/ini)
+
         JsonStreamAnalyzer::Buffer::IOFileReader fileReader(file_name.c_str());
         JsonStreamAnalyzer::Stream stream(&fileReader);
         JsonStreamAnalyzer::Decoder decoder(&stream);
+
+        JsonStreamAnalyzer::Element* element = decoder.decode();
+
+        if (element->getType() == ELEMENT_TYPE_OBJECT) {
+            std::map<std::string, JsonStreamAnalyzer::Element *>* obj = (std::map<std::string, JsonStreamAnalyzer::Element *>*) element->getData();
+        }
     }
 };
