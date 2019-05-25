@@ -101,6 +101,14 @@ int main (int argc, char** argv) {
         return 0;
     }
 
+//    @todo: for debug
+//    TarantoolConfig* tConf = config.getTarantoolConfig();
+//    int n_size = strlen(tConf->host.c_str()) + 2 + 6;
+//    char* tarantoolUri = new char[n_size];
+//    std::sprintf(tarantoolUri, "%s:%d", tConf->host.c_str(), tConf->port);
+//
+//    std::cout << "Listen tarantool: " << tarantoolUri << std::endl;
+
     RunServer(&config);
 
     return 0;
