@@ -93,7 +93,6 @@ private:
                         JsonStreamAnalyzer::Element* hostTarantool = tarantoolObject->at("host");
                         if (hostTarantool->getType() == ELEMENT_TYPE_TEXT) {
                             std::string *host = (std::string*) hostTarantool->getData();
-                            std::cout << "Host: " << *host << std::endl;
                             this->tarantoolConfig->host = *host;
                         }
                     }
@@ -101,7 +100,6 @@ private:
                         JsonStreamAnalyzer::Element* portTarantool = tarantoolObject->at("port");
                         if (portTarantool->getType() == ELEMENT_TYPE_NUMERIC) {
                             std::string *sPort = (std::string*) portTarantool->getData();
-                            std::cout << "Port: " << *sPort << std::endl;
                             this->tarantoolConfig->port = atoi(sPort->c_str());
                         }
                     }
