@@ -64,7 +64,9 @@ public:
 private:
     Storage* getStorage() {
         TarantoolConfig* tConf = this->config->getTarantoolConfig();
-        std::string tarantoolUri = tConf->host + ":3301";
+        int n_size = strlen(tConf->host.c_str()) + 2 + 6;
+        char* tarantoolUri = new char[n_size];
+        std::sprintf(tarantoolUri, "%s:%d", tConf->host.c_str(), tConf->port);
         Storage* storage = new Storage(tarantoolUri);
         return storage;
     }
