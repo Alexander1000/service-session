@@ -14,8 +14,6 @@
 #include "session_data.cc"
 #include "storage.cc"
 
-#define TARANTOOL_URI "127.0.0.1:3302"
-
 using grpc::Server;
 using grpc::ServerBuilder;
 using grpc::ServerContext;
