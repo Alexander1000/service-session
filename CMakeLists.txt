@@ -53,6 +53,9 @@ message(STATUS "Found libtarantool library: ${TARANTOOL_C}")
 find_library(MSGPACK libmsgpuck.a)
 message(STATUS "Found libmsgpuck: ${MSGPACK}")
 
+find_library(JSON_STREAM_ANALYZER libjson-stream-analyzer.a)
+message(STATUS "Found json-stream-analyzer library: ${JSON_STREAM_ANALYZER}")
+
 # add the executable
 add_executable(
     service-session "server.cc"
@@ -65,4 +68,5 @@ target_link_libraries(service-session
     ${LIBPROTOBUF}
     ${TARANTOOL_C}
     ${MSGPACK}
+    ${JSON_STREAM_ANALYZER}
 )

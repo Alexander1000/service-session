@@ -5,3 +5,5 @@ cmake-build-debug/*
 Makefile
 cmake_install.cmake
 service-session.cbp
+etc/config.local.json
+service-session

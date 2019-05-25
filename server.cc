@@ -29,10 +29,14 @@ using session::SessionService;
 
 class ServiceSessionServer final : public SessionService::Service {
 public:
+    ServiceSessionServer(Config* config) {
+        this->config = config;
+    }
+
     Status Save(ServerContext* context, const SaveRequest* request, SaveResponse* response) override {
-        Storage storage(TARANTOOL_URI);
+        Storage* storage = this->getStorage();
         SessionData sessionData(request->sessid(), request->userid(), request->access_token(), request->refresh_token());
-        int result = storage.save(&sessionData);
+        int result = storage->save(&sessionData);
         return Status::OK;
     }
 
@@ -40,8 +44,8 @@ public:
         std::cout << "receive message" << std::endl;
         std::cout << "sessid: " << request->sessid() << std::endl;
 
-        Storage storage(TARANTOOL_URI);
-        SessionData *sessionData = storage.getById(request->sessid());
+        Storage* storage = this->getStorage();
+        SessionData *sessionData = storage->getById(request->sessid());
 
         if (sessionData != NULL) {
             response->set_userid(sessionData->userId);
@@ -55,11 +59,20 @@ public:
 
         return Status::OK;
     }
+
+private:
+    Storage* getStorage() {
+        TarantoolConfig* tConf = this->config->getTarantoolConfig();
+        Storage* storage = new Storage(tConf->getUri());
+        return storage;
+    }
+
+    Config* config;
 };
 
-void RunServer() {
+void RunServer(Config* config) {
     std::string server_address("0.0.0.0:50051");
-    ServiceSessionServer service;
+    ServiceSessionServer service(config);
 
     ServerBuilder builder;
     // Listen on the given address without any authentication mechanism.
@@ -84,7 +97,10 @@ int main (int argc, char** argv) {
         return 0;
     }
 
-    RunServer();
+    TarantoolConfig* tConf = config.getTarantoolConfig();
+    std::cout << "Listen tarantool: " << tConf->getUri() << std::endl;
+
+    RunServer(&config);
 
     return 0;
 }
