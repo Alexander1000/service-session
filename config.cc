@@ -52,7 +52,7 @@ public:
         this->tarantoolConfig = new TarantoolConfig;
 
         this->listen = std::string("127.0.0.1");
-        this->port = 50001;
+        this->port = 50051;
 
         if (argc == 1) {
             // run without params
@@ -116,23 +116,28 @@ private:
 
         if (element->getType() == ELEMENT_TYPE_OBJECT) {
             JsonObject* obj = (JsonObject*) element->getData();
+
             if (obj->find("tarantool") != obj->end()) {
                 JsonStreamAnalyzer::Element* tarantoolConfig = obj->at("tarantool");
                 if (tarantoolConfig->getType() == ELEMENT_TYPE_OBJECT) {
                     this->tarantoolConfig->parseJsonObject((JsonObject*) tarantoolConfig->getData());
                 }
             }
+
             if (obj->find("server") != obj->end()) {
                 JsonStreamAnalyzer::Element* serverConfig = obj->at("server");
-                if (serverConfig->getType() != ELEMENT_TYPE_OBJECT) {
+                if (serverConfig->getType() == ELEMENT_TYPE_OBJECT) {
+                    // parse server object
                     JsonObject* serverJsonObj = (JsonObject*) serverConfig->getData();
+
                     if (serverJsonObj->find("listen") != serverJsonObj->end()) {
-                        JsonStreamAnalyzer::Element* eListenIp = serverJsonObj->at("server");
+                        JsonStreamAnalyzer::Element* eListenIp = serverJsonObj->at("listen");
                         if (eListenIp->getType() == ELEMENT_TYPE_TEXT) {
                             std::string* listen = (std::string*) eListenIp->getData();
                             this->listen = *listen;
                         }
                     }
+
                     if (serverJsonObj->find("port") != serverJsonObj->end()) {
                         JsonStreamAnalyzer::Element* ePort = serverJsonObj->at("port");
                         if (ePort->getType() == ELEMENT_TYPE_NUMERIC) {
