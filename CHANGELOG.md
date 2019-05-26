@@ -3,6 +3,7 @@
 ## 2019-05-26
 ### Changed
   - listen host port add to config
+  - generate method for create
 
 ## 2019-05-25
 ### Changed
