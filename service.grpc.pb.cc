@@ -21,6 +21,7 @@ namespace session {
 static const char* SessionService_method_names[] = {
   "/session.SessionService/Save",
   "/session.SessionService/Get",
+  "/session.SessionService/Create",
 };
 
 std::unique_ptr< SessionService::Stub> SessionService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -32,6 +33,7 @@ std::unique_ptr< SessionService::Stub> SessionService::NewStub(const std::shared
 SessionService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& channel)
   : channel_(channel), rpcmethod_Save_(SessionService_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_Get_(SessionService_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_Create_(SessionService_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status SessionService::Stub::Save(::grpc::ClientContext* context, const ::session::SaveRequest& request, ::session::SaveResponse* response) {
@@ -74,6 +76,26 @@ void SessionService::Stub::experimental_async::Get(::grpc::ClientContext* contex
   return ::grpc::internal::ClientAsyncResponseReaderFactory< ::session::GetResponse>::Create(channel_.get(), cq, rpcmethod_Get_, context, request, false);
 }
 
+::grpc::Status SessionService::Stub::Create(::grpc::ClientContext* context, const ::session::CreateRequest& request, ::session::CreateResponse* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_Create_, context, request, response);
+}
+
+void SessionService::Stub::experimental_async::Create(::grpc::ClientContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Create_, context, request, response, std::move(f));
+}
+
+void SessionService::Stub::experimental_async::Create(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::CreateResponse* response, std::function<void(::grpc::Status)> f) {
+  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Create_, context, request, response, std::move(f));
+}
+
+::grpc::ClientAsyncResponseReader< ::session::CreateResponse>* SessionService::Stub::AsyncCreateRaw(::grpc::ClientContext* context, const ::session::CreateRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::session::CreateResponse>::Create(channel_.get(), cq, rpcmethod_Create_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::session::CreateResponse>* SessionService::Stub::PrepareAsyncCreateRaw(::grpc::ClientContext* context, const ::session::CreateRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::session::CreateResponse>::Create(channel_.get(), cq, rpcmethod_Create_, context, request, false);
+}
+
 SessionService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       SessionService_method_names[0],
@@ -85,6 +107,11 @@ SessionService::Service::Service() {
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< SessionService::Service, ::session::GetRequest, ::session::GetResponse>(
           std::mem_fn(&SessionService::Service::Get), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      SessionService_method_names[2],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< SessionService::Service, ::session::CreateRequest, ::session::CreateResponse>(
+          std::mem_fn(&SessionService::Service::Create), this)));
 }
 
 SessionService::Service::~Service() {
@@ -98,6 +125,13 @@ SessionService::Service::~Service() {
 }
 
 ::grpc::Status SessionService::Service::Get(::grpc::ServerContext* context, const ::session::GetRequest* request, ::session::GetResponse* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status SessionService::Service::Create(::grpc::ServerContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response) {
   (void) context;
   (void) request;
   (void) response;

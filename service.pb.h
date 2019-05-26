@@ -41,7 +41,7 @@ struct TableStruct_service_2eproto {
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
-  static const ::google::protobuf::internal::ParseTable schema[4]
+  static const ::google::protobuf::internal::ParseTable schema[6]
     PROTOBUF_SECTION_VARIABLE(protodesc_cold);
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
@@ -49,6 +49,12 @@ struct TableStruct_service_2eproto {
 };
 void AddDescriptors_service_2eproto();
 namespace session {
+class CreateRequest;
+class CreateRequestDefaultTypeInternal;
+extern CreateRequestDefaultTypeInternal _CreateRequest_default_instance_;
+class CreateResponse;
+class CreateResponseDefaultTypeInternal;
+extern CreateResponseDefaultTypeInternal _CreateResponse_default_instance_;
 class GetRequest;
 class GetRequestDefaultTypeInternal;
 extern GetRequestDefaultTypeInternal _GetRequest_default_instance_;
@@ -64,6 +70,8 @@ extern SaveResponseDefaultTypeInternal _SaveResponse_default_instance_;
 }  // namespace session
 namespace google {
 namespace protobuf {
+template<> ::session::CreateRequest* Arena::CreateMaybeMessage<::session::CreateRequest>(Arena*);
+template<> ::session::CreateResponse* Arena::CreateMaybeMessage<::session::CreateResponse>(Arena*);
 template<> ::session::GetRequest* Arena::CreateMaybeMessage<::session::GetRequest>(Arena*);
 template<> ::session::GetResponse* Arena::CreateMaybeMessage<::session::GetResponse>(Arena*);
 template<> ::session::SaveRequest* Arena::CreateMaybeMessage<::session::SaveRequest>(Arena*);
@@ -603,6 +611,231 @@ class GetResponse final :
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::TableStruct_service_2eproto;
 };
+// -------------------------------------------------------------------
+
+class CreateRequest final :
+    public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:session.CreateRequest) */ {
+ public:
+  CreateRequest();
+  virtual ~CreateRequest();
+
+  CreateRequest(const CreateRequest& from);
+
+  inline CreateRequest& operator=(const CreateRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  CreateRequest(CreateRequest&& from) noexcept
+    : CreateRequest() {
+    *this = ::std::move(from);
+  }
+
+  inline CreateRequest& operator=(CreateRequest&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return default_instance().GetDescriptor();
+  }
+  static const CreateRequest& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const CreateRequest* internal_default_instance() {
+    return reinterpret_cast<const CreateRequest*>(
+               &_CreateRequest_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    4;
+
+  void Swap(CreateRequest* other);
+  friend void swap(CreateRequest& a, CreateRequest& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline CreateRequest* New() const final {
+    return CreateMaybeMessage<CreateRequest>(nullptr);
+  }
+
+  CreateRequest* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<CreateRequest>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const CreateRequest& from);
+  void MergeFrom(const CreateRequest& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  #if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+  static const char* _InternalParse(const char* begin, const char* end, void* object, ::google::protobuf::internal::ParseContext* ctx);
+  ::google::protobuf::internal::ParseFunc _ParseFunc() const final { return _InternalParse; }
+  #else
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  #endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(CreateRequest* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // @@protoc_insertion_point(class_scope:session.CreateRequest)
+ private:
+  class HasBitSetters;
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_service_2eproto;
+};
+// -------------------------------------------------------------------
+
+class CreateResponse final :
+    public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:session.CreateResponse) */ {
+ public:
+  CreateResponse();
+  virtual ~CreateResponse();
+
+  CreateResponse(const CreateResponse& from);
+
+  inline CreateResponse& operator=(const CreateResponse& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  CreateResponse(CreateResponse&& from) noexcept
+    : CreateResponse() {
+    *this = ::std::move(from);
+  }
+
+  inline CreateResponse& operator=(CreateResponse&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor() {
+    return default_instance().GetDescriptor();
+  }
+  static const CreateResponse& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const CreateResponse* internal_default_instance() {
+    return reinterpret_cast<const CreateResponse*>(
+               &_CreateResponse_default_instance_);
+  }
+  static constexpr int kIndexInFileMessages =
+    5;
+
+  void Swap(CreateResponse* other);
+  friend void swap(CreateResponse& a, CreateResponse& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline CreateResponse* New() const final {
+    return CreateMaybeMessage<CreateResponse>(nullptr);
+  }
+
+  CreateResponse* New(::google::protobuf::Arena* arena) const final {
+    return CreateMaybeMessage<CreateResponse>(arena);
+  }
+  void CopyFrom(const ::google::protobuf::Message& from) final;
+  void MergeFrom(const ::google::protobuf::Message& from) final;
+  void CopyFrom(const CreateResponse& from);
+  void MergeFrom(const CreateResponse& from);
+  PROTOBUF_ATTRIBUTE_REINITIALIZES void Clear() final;
+  bool IsInitialized() const final;
+
+  size_t ByteSizeLong() const final;
+  #if GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+  static const char* _InternalParse(const char* begin, const char* end, void* object, ::google::protobuf::internal::ParseContext* ctx);
+  ::google::protobuf::internal::ParseFunc _ParseFunc() const final { return _InternalParse; }
+  #else
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) final;
+  #endif  // GOOGLE_PROTOBUF_ENABLE_EXPERIMENTAL_PARSER
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const final;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      ::google::protobuf::uint8* target) const final;
+  int GetCachedSize() const final { return _cached_size_.Get(); }
+
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const final;
+  void InternalSwap(CreateResponse* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return nullptr;
+  }
+  inline void* MaybeArenaPtr() const {
+    return nullptr;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const final;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string sessid = 1;
+  void clear_sessid();
+  static const int kSessidFieldNumber = 1;
+  const ::std::string& sessid() const;
+  void set_sessid(const ::std::string& value);
+  #if LANG_CXX11
+  void set_sessid(::std::string&& value);
+  #endif
+  void set_sessid(const char* value);
+  void set_sessid(const char* value, size_t size);
+  ::std::string* mutable_sessid();
+  ::std::string* release_sessid();
+  void set_allocated_sessid(::std::string* sessid);
+
+  // @@protoc_insertion_point(class_scope:session.CreateResponse)
+ private:
+  class HasBitSetters;
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr sessid_;
+  mutable ::google::protobuf::internal::CachedSize _cached_size_;
+  friend struct ::TableStruct_service_2eproto;
+};
 // ===================================================================
 
 
@@ -986,9 +1219,74 @@ inline void GetResponse::set_allocated_refresh_token(::std::string* refresh_toke
   // @@protoc_insertion_point(field_set_allocated:session.GetResponse.refresh_token)
 }
 
+// -------------------------------------------------------------------
+
+// CreateRequest
+
+// -------------------------------------------------------------------
+
+// CreateResponse
+
+// string sessid = 1;
+inline void CreateResponse::clear_sessid() {
+  sessid_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& CreateResponse::sessid() const {
+  // @@protoc_insertion_point(field_get:session.CreateResponse.sessid)
+  return sessid_.GetNoArena();
+}
+inline void CreateResponse::set_sessid(const ::std::string& value) {
+  
+  sessid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:session.CreateResponse.sessid)
+}
+#if LANG_CXX11
+inline void CreateResponse::set_sessid(::std::string&& value) {
+  
+  sessid_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:session.CreateResponse.sessid)
+}
+#endif
+inline void CreateResponse::set_sessid(const char* value) {
+  GOOGLE_DCHECK(value != nullptr);
+  
+  sessid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:session.CreateResponse.sessid)
+}
+inline void CreateResponse::set_sessid(const char* value, size_t size) {
+  
+  sessid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:session.CreateResponse.sessid)
+}
+inline ::std::string* CreateResponse::mutable_sessid() {
+  
+  // @@protoc_insertion_point(field_mutable:session.CreateResponse.sessid)
+  return sessid_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* CreateResponse::release_sessid() {
+  // @@protoc_insertion_point(field_release:session.CreateResponse.sessid)
+  
+  return sessid_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void CreateResponse::set_allocated_sessid(::std::string* sessid) {
+  if (sessid != nullptr) {
+    
+  } else {
+    
+  }
+  sessid_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), sessid);
+  // @@protoc_insertion_point(field_set_allocated:session.CreateResponse.sessid)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
