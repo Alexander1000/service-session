@@ -58,6 +58,10 @@ public:
         return Status::OK;
     }
 
+    ::grpc::Status Create(::grpc::ServerContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response) override {
+        return Status::OK;
+    }
+
 private:
     Storage* getStorage() {
         TarantoolConfig* tConf = this->config->getTarantoolConfig();

@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <string>
+#include <memory.h>
 
 #include <tarantool/tarantool.h>
 #include <tarantool/tnt_net.h>
@@ -14,6 +15,19 @@
 #define UNDEFINED_VALUE -1
 
 #define TARANTOOL_SPACE_USER_SESSION "us"
+
+void gen_random(char *s, const int len) {
+    static const char alphanum[] =
+            "0123456789"
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+
+    for (int i = 0; i < len; ++i) {
+        s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+    }
+
+    s[len] = 0;
+}
 
 class Storage
 {
@@ -214,6 +228,73 @@ public:
         std::cout << "wrote bytes: " << bytes_count << std::endl;
 
         this->free_connect(conn);
+        return 0;
+    }
+
+    int create(char* newSessid) {
+        struct tnt_stream* conn = this->connect();
+        if (conn == NULL) {
+            return -1;
+        }
+
+        if (this->spaceNo == UNDEFINED_VALUE) {
+            tnt_reload_schema(conn);
+        }
+
+        if (this->spaceNo == UNDEFINED_VALUE) {
+            int spaceNo = tnt_get_spaceno(conn, TARANTOOL_SPACE_USER_SESSION, strlen(TARANTOOL_SPACE_USER_SESSION));
+            if (spaceNo == -1) {
+                std::cout << "error while get space no" << std::endl;
+                this->free_connect(conn);
+                return -1;
+            }
+            this->spaceNo = spaceNo;
+        }
+
+        struct tnt_stream *tuple = tnt_object(NULL);
+
+        tnt_object_reset(tuple);
+        tnt_object_add_array(tuple, 4);
+
+        char* sessid = new char[65];
+        memset(sessid, 0, sizeof(char) * 65);
+
+        // pos: 0-11
+        gen_random(sessid, 12);
+        // pos: 12
+        sessid[12] = '.';
+        // pos: 13-25
+        gen_random(sessid + 13, 13);
+        // pos: 26
+        sessid[26] = ':';
+        // pos: 27-38
+        gen_random(sessid + 27, 13);
+        // pos: 39
+        sessid[39] = '-';
+        // pos: 40-50
+        gen_random(sessid + 40, 11);
+        // pos: 51
+        sessid[51] = '.';
+        // pos: 52-64
+        gen_random(sessid + 52, 12);
+
+        tnt_object_add_str(tuple, sessid, strlen(sessid));
+        tnt_object_add_int(tuple, 0);
+        tnt_object_add_str(tuple, "", 0);
+        tnt_object_add_str(tuple, "", 0);
+
+        ssize_t bytes_count = tnt_replace(conn, this->spaceNo, tuple);
+        if (bytes_count == -1) {
+            std::cout << "error: " << tnt_error(conn) << std::endl;
+            return -1;
+        }
+
+        std::cout << "wrote bytes: " << bytes_count << std::endl;
+
+        this->free_connect(conn);
+
+        newSessid = sessid;
+
         return 0;
     }
 private:
