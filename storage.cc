@@ -282,7 +282,8 @@ public:
         tnt_object_add_str(tuple, "", 0);
         tnt_object_add_str(tuple, "", 0);
 
-        ssize_t bytes_count = tnt_replace(conn, this->spaceNo, tuple);
+        // todo: check exist
+        ssize_t bytes_count = tnt_insert(conn, this->spaceNo, tuple);
         if (bytes_count == -1) {
             std::cout << "error: " << tnt_error(conn) << std::endl;
             return -1;
