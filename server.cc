@@ -69,7 +69,7 @@ private:
 };
 
 void RunServer(Config* config) {
-    std::string server_address("0.0.0.0:50051");
+    std::string server_address(config->getUri());
     ServiceSessionServer service(config);
 
     ServerBuilder builder;
