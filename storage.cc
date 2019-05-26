@@ -231,7 +231,7 @@ public:
         return 0;
     }
 
-    int create(char* newSessid) {
+    int create(char* sessid) {
         struct tnt_stream* conn = this->connect();
         if (conn == NULL) {
             return -1;
@@ -256,7 +256,6 @@ public:
         tnt_object_reset(tuple);
         tnt_object_add_array(tuple, 4);
 
-        char* sessid = new char[65];
         memset(sessid, 0, sizeof(char) * 65);
 
         // pos: 0-11
@@ -292,8 +291,6 @@ public:
         std::cout << "wrote bytes: " << bytes_count << std::endl;
 
         this->free_connect(conn);
-
-        newSessid = sessid;
 
         return 0;
     }
