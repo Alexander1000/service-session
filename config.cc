@@ -51,6 +51,9 @@ public:
 
         this->tarantoolConfig = new TarantoolConfig;
 
+        this->listen = std::string("127.0.0.1");
+        this->port = 50001;
+
         if (argc == 1) {
             // run without params
             return;
@@ -85,10 +88,21 @@ public:
     {
         return this->tarantoolConfig;
     }
+
+    char* getUri() {
+        int n_size = strlen(this->listen.c_str()) + 2 + 6;
+        char* uri = new char[n_size];
+        memset(uri, 0, sizeof(char) * n_size);
+        std::sprintf(uri, "%s:%d", this->listen.c_str(), this->port);
+        return uri;
+    }
 private:
     bool is_help;
 
     TarantoolConfig* tarantoolConfig;
+
+    std::string listen;
+    int port;
 
     void parse_config_file(std::string file_name)
     {
@@ -106,6 +120,26 @@ private:
                 JsonStreamAnalyzer::Element* tarantoolConfig = obj->at("tarantool");
                 if (tarantoolConfig->getType() == ELEMENT_TYPE_OBJECT) {
                     this->tarantoolConfig->parseJsonObject((JsonObject*) tarantoolConfig->getData());
+                }
+            }
+            if (obj->find("server") != obj->end()) {
+                JsonStreamAnalyzer::Element* serverConfig = obj->at("server");
+                if (serverConfig->getType() != ELEMENT_TYPE_OBJECT) {
+                    JsonObject* serverJsonObj = (JsonObject*) serverConfig->getData();
+                    if (serverJsonObj->find("listen") != serverJsonObj->end()) {
+                        JsonStreamAnalyzer::Element* eListenIp = serverJsonObj->at("server");
+                        if (eListenIp->getType() == ELEMENT_TYPE_TEXT) {
+                            std::string* listen = (std::string*) eListenIp->getData();
+                            this->listen = *listen;
+                        }
+                    }
+                    if (serverJsonObj->find("port") != serverJsonObj->end()) {
+                        JsonStreamAnalyzer::Element* ePort = serverJsonObj->at("port");
+                        if (ePort->getType() == ELEMENT_TYPE_NUMERIC) {
+                            std::string *sPort = (std::string*) ePort->getData();
+                            this->port = atoi(sPort->c_str());
+                        }
+                    }
                 }
             }
         }
