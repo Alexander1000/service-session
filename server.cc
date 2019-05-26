@@ -58,6 +58,17 @@ public:
         return Status::OK;
     }
 
+    ::grpc::Status Create(::grpc::ServerContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response) override {
+        Storage* storage = this->getStorage();
+        char* sessid = new char[65];
+        memset(sessid, 0, sizeof(char) * 65);
+        int result = storage->create(sessid);
+        if (result == 0) {
+            response->set_sessid(sessid);
+        }
+        return Status::OK;
+    }
+
 private:
     Storage* getStorage() {
         TarantoolConfig* tConf = this->config->getTarantoolConfig();

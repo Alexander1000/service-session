@@ -4,6 +4,7 @@
 ### Changed
   - listen host port add to config
   - generate method for create
+  - implement method create session
 
 ## 2019-05-25
 ### Changed
