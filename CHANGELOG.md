@@ -1,5 +1,9 @@
 # Changelog service-session
 
+## 2019-05-26
+### Changed
+  - listen host port add to config
+
 ## 2019-05-25
 ### Changed
   - Добавлена обработка флагов
