@@ -1,5 +1,9 @@
 # Changelog service-session
 
+## 2019-05-29
+### Changed
+  - Обновлены зависимости
+
 ## 2019-05-26
 ### Changed
   - listen host port add to config

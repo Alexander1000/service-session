@@ -2,6 +2,7 @@
 #include <string>
 #include <map>
 
+#include <io-buffer.h>
 #include <json-stream-analyzer.h>
 
 typedef std::map<std::string, JsonStreamAnalyzer::Element *> JsonObject;
@@ -108,7 +109,7 @@ private:
     {
         // todo: file analyze (json/yml/cfg/ini)
 
-        JsonStreamAnalyzer::Buffer::IOFileReader fileReader(file_name.c_str());
+        IOBuffer::IOFileReader fileReader(file_name.c_str());
         JsonStreamAnalyzer::Stream stream(&fileReader);
         JsonStreamAnalyzer::Decoder decoder(&stream);
 
