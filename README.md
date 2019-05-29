@@ -1,5 +1,9 @@
 # service-session
 
+Project requirements (static library):
+  - [json-stream-analyzer](https://github.com/Alexander1000/json-stream-analyzer)
+  - [io-buffer](https://github.com/Alexander1000/io-buffer)
+
 How build project:
 ```shell
 git submodule update
