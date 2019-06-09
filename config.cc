@@ -110,7 +110,8 @@ private:
         // todo: file analyze (json/yml/cfg/ini)
 
         IOBuffer::IOFileReader fileReader(file_name.c_str());
-        JsonStreamAnalyzer::Stream stream(&fileReader);
+        IOBuffer::CharStream charStream(&fileReader);
+        JsonStreamAnalyzer::Stream stream(&charStream);
         JsonStreamAnalyzer::Decoder decoder(&stream);
 
         JsonStreamAnalyzer::Element* element = decoder.decode();
