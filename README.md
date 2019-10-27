@@ -3,6 +3,10 @@
 Project requirements (static library):
   - [json-stream-analyzer](https://github.com/Alexander1000/json-stream-analyzer)
   - [io-buffer](https://github.com/Alexander1000/io-buffer)
+  - [grpc](https://github.com/grpc/grpc.git)
+  - [protobuf](https://github.com/google/protobuf.git)
+  - [tarantool-client](https://github.com/tarantool/tarantool-c.git)
+  - [msgpack (special for tarantool)](https://github.com/tarantool/msgpuck.git)
 
 How build project:
 ```shell
