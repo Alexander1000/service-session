@@ -41,19 +41,27 @@ SessionService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterface>& cha
 }
 
 void SessionService::Stub::experimental_async::Save(::grpc::ClientContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Save_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Save_, context, request, response, std::move(f));
 }
 
 void SessionService::Stub::experimental_async::Save(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::SaveResponse* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Save_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Save_, context, request, response, std::move(f));
+}
+
+void SessionService::Stub::experimental_async::Save(::grpc::ClientContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_Save_, context, request, response, reactor);
+}
+
+void SessionService::Stub::experimental_async::Save(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::SaveResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_Save_, context, request, response, reactor);
 }
 
 ::grpc::ClientAsyncResponseReader< ::session::SaveResponse>* SessionService::Stub::AsyncSaveRaw(::grpc::ClientContext* context, const ::session::SaveRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::session::SaveResponse>::Create(channel_.get(), cq, rpcmethod_Save_, context, request, true);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::session::SaveResponse>::Create(channel_.get(), cq, rpcmethod_Save_, context, request, true);
 }
 
 ::grpc::ClientAsyncResponseReader< ::session::SaveResponse>* SessionService::Stub::PrepareAsyncSaveRaw(::grpc::ClientContext* context, const ::session::SaveRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::session::SaveResponse>::Create(channel_.get(), cq, rpcmethod_Save_, context, request, false);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::session::SaveResponse>::Create(channel_.get(), cq, rpcmethod_Save_, context, request, false);
 }
 
 ::grpc::Status SessionService::Stub::Get(::grpc::ClientContext* context, const ::session::GetRequest& request, ::session::GetResponse* response) {
@@ -61,19 +69,27 @@ void SessionService::Stub::experimental_async::Save(::grpc::ClientContext* conte
 }
 
 void SessionService::Stub::experimental_async::Get(::grpc::ClientContext* context, const ::session::GetRequest* request, ::session::GetResponse* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Get_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Get_, context, request, response, std::move(f));
 }
 
 void SessionService::Stub::experimental_async::Get(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::GetResponse* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Get_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Get_, context, request, response, std::move(f));
+}
+
+void SessionService::Stub::experimental_async::Get(::grpc::ClientContext* context, const ::session::GetRequest* request, ::session::GetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_Get_, context, request, response, reactor);
+}
+
+void SessionService::Stub::experimental_async::Get(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::GetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_Get_, context, request, response, reactor);
 }
 
 ::grpc::ClientAsyncResponseReader< ::session::GetResponse>* SessionService::Stub::AsyncGetRaw(::grpc::ClientContext* context, const ::session::GetRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::session::GetResponse>::Create(channel_.get(), cq, rpcmethod_Get_, context, request, true);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::session::GetResponse>::Create(channel_.get(), cq, rpcmethod_Get_, context, request, true);
 }
 
 ::grpc::ClientAsyncResponseReader< ::session::GetResponse>* SessionService::Stub::PrepareAsyncGetRaw(::grpc::ClientContext* context, const ::session::GetRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::session::GetResponse>::Create(channel_.get(), cq, rpcmethod_Get_, context, request, false);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::session::GetResponse>::Create(channel_.get(), cq, rpcmethod_Get_, context, request, false);
 }
 
 ::grpc::Status SessionService::Stub::Create(::grpc::ClientContext* context, const ::session::CreateRequest& request, ::session::CreateResponse* response) {
@@ -81,19 +97,27 @@ void SessionService::Stub::experimental_async::Get(::grpc::ClientContext* contex
 }
 
 void SessionService::Stub::experimental_async::Create(::grpc::ClientContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Create_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Create_, context, request, response, std::move(f));
 }
 
 void SessionService::Stub::experimental_async::Create(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::CreateResponse* response, std::function<void(::grpc::Status)> f) {
-  return ::grpc::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Create_, context, request, response, std::move(f));
+  ::grpc_impl::internal::CallbackUnaryCall(stub_->channel_.get(), stub_->rpcmethod_Create_, context, request, response, std::move(f));
+}
+
+void SessionService::Stub::experimental_async::Create(::grpc::ClientContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_Create_, context, request, response, reactor);
+}
+
+void SessionService::Stub::experimental_async::Create(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::CreateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) {
+  ::grpc_impl::internal::ClientCallbackUnaryFactory::Create(stub_->channel_.get(), stub_->rpcmethod_Create_, context, request, response, reactor);
 }
 
 ::grpc::ClientAsyncResponseReader< ::session::CreateResponse>* SessionService::Stub::AsyncCreateRaw(::grpc::ClientContext* context, const ::session::CreateRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::session::CreateResponse>::Create(channel_.get(), cq, rpcmethod_Create_, context, request, true);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::session::CreateResponse>::Create(channel_.get(), cq, rpcmethod_Create_, context, request, true);
 }
 
 ::grpc::ClientAsyncResponseReader< ::session::CreateResponse>* SessionService::Stub::PrepareAsyncCreateRaw(::grpc::ClientContext* context, const ::session::CreateRequest& request, ::grpc::CompletionQueue* cq) {
-  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::session::CreateResponse>::Create(channel_.get(), cq, rpcmethod_Create_, context, request, false);
+  return ::grpc_impl::internal::ClientAsyncResponseReaderFactory< ::session::CreateResponse>::Create(channel_.get(), cq, rpcmethod_Create_, context, request, false);
 }
 
 SessionService::Service::Service() {

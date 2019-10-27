@@ -21,11 +21,6 @@ endif()
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-include_directories(
-    third_party/grpc/include
-    third_party/protobuf/src
-)
-
 set(GRPC_LIB_DIR /usr/local/lib)
 
 find_library(LIBPROTOBUF libprotobuf.a PATHS ${GRPC_LIB_DIR} NO_DEFAULT_PATH)
