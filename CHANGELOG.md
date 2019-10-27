@@ -1,5 +1,10 @@
 # Changelog service-session
 
+## 2019-10-27
+### Changed
+  - Обновлена версия protobuf
+  - Удалены git submodule
+
 ## 2019-06-09
 ### Changed
   - Обновлены зависимости

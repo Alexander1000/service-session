@@ -6,7 +6,6 @@ Project requirements (static library):
 
 How build project:
 ```shell
-git submodule update
 cmake .
 make
 ```
