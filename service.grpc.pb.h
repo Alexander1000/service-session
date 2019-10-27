@@ -11,20 +11,29 @@
 #include <grpcpp/impl/codegen/async_stream.h>
 #include <grpcpp/impl/codegen/async_unary_call.h>
 #include <grpcpp/impl/codegen/client_callback.h>
+#include <grpcpp/impl/codegen/client_context.h>
+#include <grpcpp/impl/codegen/completion_queue.h>
 #include <grpcpp/impl/codegen/method_handler_impl.h>
 #include <grpcpp/impl/codegen/proto_utils.h>
 #include <grpcpp/impl/codegen/rpc_method.h>
 #include <grpcpp/impl/codegen/server_callback.h>
+#include <grpcpp/impl/codegen/server_context.h>
 #include <grpcpp/impl/codegen/service_type.h>
 #include <grpcpp/impl/codegen/status.h>
 #include <grpcpp/impl/codegen/stub_options.h>
 #include <grpcpp/impl/codegen/sync_stream.h>
 
-namespace grpc {
+namespace grpc_impl {
 class CompletionQueue;
-class Channel;
 class ServerCompletionQueue;
 class ServerContext;
+}  // namespace grpc_impl
+
+namespace grpc {
+namespace experimental {
+template <typename RequestT, typename ResponseT>
+class MessageAllocator;
+}  // namespace experimental
 }  // namespace grpc
 
 namespace session {
@@ -63,10 +72,16 @@ class SessionService final {
       virtual ~experimental_async_interface() {}
       virtual void Save(::grpc::ClientContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response, std::function<void(::grpc::Status)>) = 0;
       virtual void Save(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::SaveResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void Save(::grpc::ClientContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void Save(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::SaveResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       virtual void Get(::grpc::ClientContext* context, const ::session::GetRequest* request, ::session::GetResponse* response, std::function<void(::grpc::Status)>) = 0;
       virtual void Get(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::GetResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void Get(::grpc::ClientContext* context, const ::session::GetRequest* request, ::session::GetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void Get(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::GetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
       virtual void Create(::grpc::ClientContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, std::function<void(::grpc::Status)>) = 0;
       virtual void Create(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::CreateResponse* response, std::function<void(::grpc::Status)>) = 0;
+      virtual void Create(::grpc::ClientContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      virtual void Create(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::CreateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
     };
     virtual class experimental_async_interface* experimental_async() { return nullptr; }
   private:
@@ -106,10 +121,16 @@ class SessionService final {
      public:
       void Save(::grpc::ClientContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response, std::function<void(::grpc::Status)>) override;
       void Save(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::SaveResponse* response, std::function<void(::grpc::Status)>) override;
+      void Save(::grpc::ClientContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void Save(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::SaveResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       void Get(::grpc::ClientContext* context, const ::session::GetRequest* request, ::session::GetResponse* response, std::function<void(::grpc::Status)>) override;
       void Get(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::GetResponse* response, std::function<void(::grpc::Status)>) override;
+      void Get(::grpc::ClientContext* context, const ::session::GetRequest* request, ::session::GetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void Get(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::GetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
       void Create(::grpc::ClientContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, std::function<void(::grpc::Status)>) override;
       void Create(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::CreateResponse* response, std::function<void(::grpc::Status)>) override;
+      void Create(::grpc::ClientContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      void Create(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::CreateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
      private:
       friend class Stub;
       explicit experimental_async(Stub* stub): stub_(stub) { }
@@ -144,7 +165,7 @@ class SessionService final {
   template <class BaseClass>
   class WithAsyncMethod_Save : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_Save() {
       ::grpc::Service::MarkMethodAsync(0);
@@ -153,7 +174,7 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Save(::grpc::ServerContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response) override {
+    ::grpc::Status Save(::grpc::ServerContext* /*context*/, const ::session::SaveRequest* /*request*/, ::session::SaveResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -164,7 +185,7 @@ class SessionService final {
   template <class BaseClass>
   class WithAsyncMethod_Get : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_Get() {
       ::grpc::Service::MarkMethodAsync(1);
@@ -173,7 +194,7 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Get(::grpc::ServerContext* context, const ::session::GetRequest* request, ::session::GetResponse* response) override {
+    ::grpc::Status Get(::grpc::ServerContext* /*context*/, const ::session::GetRequest* /*request*/, ::session::GetResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -184,7 +205,7 @@ class SessionService final {
   template <class BaseClass>
   class WithAsyncMethod_Create : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithAsyncMethod_Create() {
       ::grpc::Service::MarkMethodAsync(2);
@@ -193,7 +214,7 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Create(::grpc::ServerContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response) override {
+    ::grpc::Status Create(::grpc::ServerContext* /*context*/, const ::session::CreateRequest* /*request*/, ::session::CreateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -205,11 +226,11 @@ class SessionService final {
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_Save : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     ExperimentalWithCallbackMethod_Save() {
       ::grpc::Service::experimental().MarkMethodCallback(0,
-        new ::grpc::internal::CallbackUnaryHandler< ::session::SaveRequest, ::session::SaveResponse>(
+        new ::grpc_impl::internal::CallbackUnaryHandler< ::session::SaveRequest, ::session::SaveResponse>(
           [this](::grpc::ServerContext* context,
                  const ::session::SaveRequest* request,
                  ::session::SaveResponse* response,
@@ -217,24 +238,30 @@ class SessionService final {
                    return this->Save(context, request, response, controller);
                  }));
     }
+    void SetMessageAllocatorFor_Save(
+        ::grpc::experimental::MessageAllocator< ::session::SaveRequest, ::session::SaveResponse>* allocator) {
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::session::SaveRequest, ::session::SaveResponse>*>(
+          ::grpc::Service::experimental().GetHandler(0))
+              ->SetMessageAllocator(allocator);
+    }
     ~ExperimentalWithCallbackMethod_Save() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Save(::grpc::ServerContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response) override {
+    ::grpc::Status Save(::grpc::ServerContext* /*context*/, const ::session::SaveRequest* /*request*/, ::session::SaveResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void Save(::grpc::ServerContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+    virtual void Save(::grpc::ServerContext* /*context*/, const ::session::SaveRequest* /*request*/, ::session::SaveResponse* /*response*/, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_Get : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     ExperimentalWithCallbackMethod_Get() {
       ::grpc::Service::experimental().MarkMethodCallback(1,
-        new ::grpc::internal::CallbackUnaryHandler< ::session::GetRequest, ::session::GetResponse>(
+        new ::grpc_impl::internal::CallbackUnaryHandler< ::session::GetRequest, ::session::GetResponse>(
           [this](::grpc::ServerContext* context,
                  const ::session::GetRequest* request,
                  ::session::GetResponse* response,
@@ -242,24 +269,30 @@ class SessionService final {
                    return this->Get(context, request, response, controller);
                  }));
     }
+    void SetMessageAllocatorFor_Get(
+        ::grpc::experimental::MessageAllocator< ::session::GetRequest, ::session::GetResponse>* allocator) {
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::session::GetRequest, ::session::GetResponse>*>(
+          ::grpc::Service::experimental().GetHandler(1))
+              ->SetMessageAllocator(allocator);
+    }
     ~ExperimentalWithCallbackMethod_Get() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Get(::grpc::ServerContext* context, const ::session::GetRequest* request, ::session::GetResponse* response) override {
+    ::grpc::Status Get(::grpc::ServerContext* /*context*/, const ::session::GetRequest* /*request*/, ::session::GetResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void Get(::grpc::ServerContext* context, const ::session::GetRequest* request, ::session::GetResponse* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+    virtual void Get(::grpc::ServerContext* /*context*/, const ::session::GetRequest* /*request*/, ::session::GetResponse* /*response*/, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_Create : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     ExperimentalWithCallbackMethod_Create() {
       ::grpc::Service::experimental().MarkMethodCallback(2,
-        new ::grpc::internal::CallbackUnaryHandler< ::session::CreateRequest, ::session::CreateResponse>(
+        new ::grpc_impl::internal::CallbackUnaryHandler< ::session::CreateRequest, ::session::CreateResponse>(
           [this](::grpc::ServerContext* context,
                  const ::session::CreateRequest* request,
                  ::session::CreateResponse* response,
@@ -267,21 +300,27 @@ class SessionService final {
                    return this->Create(context, request, response, controller);
                  }));
     }
+    void SetMessageAllocatorFor_Create(
+        ::grpc::experimental::MessageAllocator< ::session::CreateRequest, ::session::CreateResponse>* allocator) {
+      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::session::CreateRequest, ::session::CreateResponse>*>(
+          ::grpc::Service::experimental().GetHandler(2))
+              ->SetMessageAllocator(allocator);
+    }
     ~ExperimentalWithCallbackMethod_Create() override {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Create(::grpc::ServerContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response) override {
+    ::grpc::Status Create(::grpc::ServerContext* /*context*/, const ::session::CreateRequest* /*request*/, ::session::CreateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void Create(::grpc::ServerContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+    virtual void Create(::grpc::ServerContext* /*context*/, const ::session::CreateRequest* /*request*/, ::session::CreateResponse* /*response*/, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   typedef ExperimentalWithCallbackMethod_Save<ExperimentalWithCallbackMethod_Get<ExperimentalWithCallbackMethod_Create<Service > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_Save : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_Save() {
       ::grpc::Service::MarkMethodGeneric(0);
@@ -290,7 +329,7 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Save(::grpc::ServerContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response) override {
+    ::grpc::Status Save(::grpc::ServerContext* /*context*/, const ::session::SaveRequest* /*request*/, ::session::SaveResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -298,7 +337,7 @@ class SessionService final {
   template <class BaseClass>
   class WithGenericMethod_Get : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_Get() {
       ::grpc::Service::MarkMethodGeneric(1);
@@ -307,7 +346,7 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Get(::grpc::ServerContext* context, const ::session::GetRequest* request, ::session::GetResponse* response) override {
+    ::grpc::Status Get(::grpc::ServerContext* /*context*/, const ::session::GetRequest* /*request*/, ::session::GetResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -315,7 +354,7 @@ class SessionService final {
   template <class BaseClass>
   class WithGenericMethod_Create : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithGenericMethod_Create() {
       ::grpc::Service::MarkMethodGeneric(2);
@@ -324,7 +363,7 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Create(::grpc::ServerContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response) override {
+    ::grpc::Status Create(::grpc::ServerContext* /*context*/, const ::session::CreateRequest* /*request*/, ::session::CreateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -332,7 +371,7 @@ class SessionService final {
   template <class BaseClass>
   class WithRawMethod_Save : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_Save() {
       ::grpc::Service::MarkMethodRaw(0);
@@ -341,7 +380,7 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Save(::grpc::ServerContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response) override {
+    ::grpc::Status Save(::grpc::ServerContext* /*context*/, const ::session::SaveRequest* /*request*/, ::session::SaveResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -352,7 +391,7 @@ class SessionService final {
   template <class BaseClass>
   class WithRawMethod_Get : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_Get() {
       ::grpc::Service::MarkMethodRaw(1);
@@ -361,7 +400,7 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Get(::grpc::ServerContext* context, const ::session::GetRequest* request, ::session::GetResponse* response) override {
+    ::grpc::Status Get(::grpc::ServerContext* /*context*/, const ::session::GetRequest* /*request*/, ::session::GetResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -372,7 +411,7 @@ class SessionService final {
   template <class BaseClass>
   class WithRawMethod_Create : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithRawMethod_Create() {
       ::grpc::Service::MarkMethodRaw(2);
@@ -381,7 +420,7 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Create(::grpc::ServerContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response) override {
+    ::grpc::Status Create(::grpc::ServerContext* /*context*/, const ::session::CreateRequest* /*request*/, ::session::CreateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -392,11 +431,11 @@ class SessionService final {
   template <class BaseClass>
   class ExperimentalWithRawCallbackMethod_Save : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     ExperimentalWithRawCallbackMethod_Save() {
       ::grpc::Service::experimental().MarkMethodRawCallback(0,
-        new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+        new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
           [this](::grpc::ServerContext* context,
                  const ::grpc::ByteBuffer* request,
                  ::grpc::ByteBuffer* response,
@@ -408,20 +447,20 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Save(::grpc::ServerContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response) override {
+    ::grpc::Status Save(::grpc::ServerContext* /*context*/, const ::session::SaveRequest* /*request*/, ::session::SaveResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void Save(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+    virtual void Save(::grpc::ServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   template <class BaseClass>
   class ExperimentalWithRawCallbackMethod_Get : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     ExperimentalWithRawCallbackMethod_Get() {
       ::grpc::Service::experimental().MarkMethodRawCallback(1,
-        new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+        new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
           [this](::grpc::ServerContext* context,
                  const ::grpc::ByteBuffer* request,
                  ::grpc::ByteBuffer* response,
@@ -433,20 +472,20 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Get(::grpc::ServerContext* context, const ::session::GetRequest* request, ::session::GetResponse* response) override {
+    ::grpc::Status Get(::grpc::ServerContext* /*context*/, const ::session::GetRequest* /*request*/, ::session::GetResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void Get(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+    virtual void Get(::grpc::ServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   template <class BaseClass>
   class ExperimentalWithRawCallbackMethod_Create : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     ExperimentalWithRawCallbackMethod_Create() {
       ::grpc::Service::experimental().MarkMethodRawCallback(2,
-        new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+        new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
           [this](::grpc::ServerContext* context,
                  const ::grpc::ByteBuffer* request,
                  ::grpc::ByteBuffer* response,
@@ -458,16 +497,16 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable synchronous version of this method
-    ::grpc::Status Create(::grpc::ServerContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response) override {
+    ::grpc::Status Create(::grpc::ServerContext* /*context*/, const ::session::CreateRequest* /*request*/, ::session::CreateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void Create(::grpc::ServerContext* context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+    virtual void Create(::grpc::ServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_Save : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_Save() {
       ::grpc::Service::MarkMethodStreamed(0,
@@ -477,7 +516,7 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status Save(::grpc::ServerContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response) override {
+    ::grpc::Status Save(::grpc::ServerContext* /*context*/, const ::session::SaveRequest* /*request*/, ::session::SaveResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -487,7 +526,7 @@ class SessionService final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_Get : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_Get() {
       ::grpc::Service::MarkMethodStreamed(1,
@@ -497,7 +536,7 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status Get(::grpc::ServerContext* context, const ::session::GetRequest* request, ::session::GetResponse* response) override {
+    ::grpc::Status Get(::grpc::ServerContext* /*context*/, const ::session::GetRequest* /*request*/, ::session::GetResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -507,7 +546,7 @@ class SessionService final {
   template <class BaseClass>
   class WithStreamedUnaryMethod_Create : public BaseClass {
    private:
-    void BaseClassMustBeDerivedFromService(const Service *service) {}
+    void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     WithStreamedUnaryMethod_Create() {
       ::grpc::Service::MarkMethodStreamed(2,
@@ -517,7 +556,7 @@ class SessionService final {
       BaseClassMustBeDerivedFromService(this);
     }
     // disable regular version of this method
-    ::grpc::Status Create(::grpc::ServerContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response) override {
+    ::grpc::Status Create(::grpc::ServerContext* /*context*/, const ::session::CreateRequest* /*request*/, ::session::CreateResponse* /*response*/) override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
