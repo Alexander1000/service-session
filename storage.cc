@@ -49,24 +49,18 @@ public:
             return NULL;
         }
 
-        if (this->spaceNo == UNDEFINED_VALUE || this->indexNo == UNDEFINED_VALUE) {
-            tnt_reload_schema(tnt);
+        int spaceNo = this->getSpaceNo(tnt, TARANTOOL_SPACE_USER_SESSION);
+
+        if (spaceNo == UNDEFINED_VALUE) {
+            std::cout << "error while get space no" << std::endl;
+            this->free_connect(tnt);
+            return NULL;
         }
 
-        if (this->spaceNo == UNDEFINED_VALUE) {
-            int spaceNo = tnt_get_spaceno(tnt, TARANTOOL_SPACE_USER_SESSION, strlen(TARANTOOL_SPACE_USER_SESSION));
-            if (spaceNo == -1) {
-                std::cout << "error while get space no" << std::endl;
-                this->free_connect(tnt);
-                return NULL;
-            }
-            this->spaceNo = spaceNo;
-        }
-
-        std::cout << "space no: " << this->spaceNo << std::endl;
+        std::cout << "space no: " << spaceNo << std::endl;
 
         if (this->indexNo == UNDEFINED_VALUE) {
-            int indexNo = tnt_get_indexno(tnt, this->spaceNo, "pk", strlen("pk"));
+            int indexNo = tnt_get_indexno(tnt, spaceNo, "pk", strlen("pk"));
             if (indexNo == -1) {
                 std::cout << "error while get index no" << std::endl;
                 this->free_connect(tnt);
@@ -86,7 +80,7 @@ public:
 
         int limit = 1, offset = 0;
 
-        int bytes_number = tnt_select(tnt, this->spaceNo, this->indexNo, limit, offset, TNT_ITER_EQ, obj);
+        int bytes_number = tnt_select(tnt, spaceNo, this->indexNo, limit, offset, TNT_ITER_EQ, obj);
         if (bytes_number == -1) {
             std::cout << "error: " << tnt_error(tnt) << std::endl;
             std::cout << "error while read data" << std::endl;
