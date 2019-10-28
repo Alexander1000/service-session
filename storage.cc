@@ -35,7 +35,6 @@ class Storage
 public:
     Storage(std::string address) {
         this->address = address;
-        this->spaceNo = UNDEFINED_VALUE;
         this->indexNo = UNDEFINED_VALUE;
         this->spaces = new std::map<std::string, int>;
     }
@@ -191,18 +190,11 @@ public:
             return -1;
         }
 
-        if (this->spaceNo == UNDEFINED_VALUE) {
-            tnt_reload_schema(conn);
-        }
-
-        if (this->spaceNo == UNDEFINED_VALUE) {
-            int spaceNo = tnt_get_spaceno(conn, TARANTOOL_SPACE_USER_SESSION, strlen(TARANTOOL_SPACE_USER_SESSION));
-            if (spaceNo == -1) {
-                std::cout << "error while get space no" << std::endl;
-                this->free_connect(conn);
-                return -1;
-            }
-            this->spaceNo = spaceNo;
+        int spaceNo = this->getSpaceNo(conn, TARANTOOL_SPACE_USER_SESSION);
+        if (spaceNo == UNDEFINED_VALUE) {
+            std::cout << "error while get space no" << std::endl;
+            this->free_connect(conn);
+            return -1;
         }
 
         struct tnt_stream *tuple = tnt_object(NULL);
@@ -215,7 +207,7 @@ public:
         tnt_object_add_str(tuple, sessionData->accessToken.c_str(), strlen(sessionData->accessToken.c_str()));
         tnt_object_add_str(tuple, sessionData->refreshToken.c_str(), strlen(sessionData->refreshToken.c_str()));
 
-        ssize_t bytes_count = tnt_replace(conn, this->spaceNo, tuple);
+        ssize_t bytes_count = tnt_replace(conn, spaceNo, tuple);
         if (bytes_count == -1) {
             std::cout << "error: " << tnt_error(conn) << std::endl;
             return -1;
@@ -233,18 +225,11 @@ public:
             return -1;
         }
 
-        if (this->spaceNo == UNDEFINED_VALUE) {
-            tnt_reload_schema(conn);
-        }
-
-        if (this->spaceNo == UNDEFINED_VALUE) {
-            int spaceNo = tnt_get_spaceno(conn, TARANTOOL_SPACE_USER_SESSION, strlen(TARANTOOL_SPACE_USER_SESSION));
-            if (spaceNo == -1) {
-                std::cout << "error while get space no" << std::endl;
-                this->free_connect(conn);
-                return -1;
-            }
-            this->spaceNo = spaceNo;
+        int spaceNo = this->getSpaceNo(conn, TARANTOOL_SPACE_USER_SESSION);
+        if (spaceNo == UNDEFINED_VALUE) {
+            std::cout << "error while get space no" << std::endl;
+            this->free_connect(conn);
+            return -1;
         }
 
         struct tnt_stream *tuple = tnt_object(NULL);
@@ -279,7 +264,7 @@ public:
         tnt_object_add_str(tuple, "", 0);
 
         // todo: check exist
-        ssize_t bytes_count = tnt_insert(conn, this->spaceNo, tuple);
+        ssize_t bytes_count = tnt_insert(conn, spaceNo, tuple);
         if (bytes_count == -1) {
             std::cout << "error: " << tnt_error(conn) << std::endl;
             return -1;
@@ -293,8 +278,6 @@ public:
     }
 private:
     std::string address;
-
-    int spaceNo;
 
     int indexNo;
 
