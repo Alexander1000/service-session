@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <memory.h>
+#include <map>
 
 #include <tarantool/tarantool.h>
 #include <tarantool/tnt_net.h>
@@ -36,6 +37,7 @@ public:
         this->address = address;
         this->spaceNo = UNDEFINED_VALUE;
         this->indexNo = UNDEFINED_VALUE;
+        this->spaces = new std::map<std::string, int>;
     }
 
     SessionData* getById(std::string sessId) {
@@ -302,6 +304,8 @@ private:
 
     int indexNo;
 
+    std::map<std::string, int>* spaces;
+
     struct tnt_stream* connect() {
         struct tnt_stream* tnt = tnt_net(NULL); // Allocating stream
         std::cout << "connection to " << this->address.c_str() << std::endl;
@@ -321,5 +325,14 @@ private:
     void free_connect(struct tnt_stream* tnt) {
         tnt_close(tnt);
         tnt_stream_free(tnt); // Close connection and free stream object
+    }
+
+    int getSpaceNo(std::string spaceName)
+    {
+        if (this->spaces->find(spaceName) != this->spaces->end()) {
+            return this->spaces->at(spaceName);
+        }
+
+        return UNDEFINED_VALUE;
     }
 };
