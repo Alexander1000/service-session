@@ -15,7 +15,7 @@
 
 #define UNDEFINED_VALUE -1
 
-#define TARANTOOL_SPACE_USER_SESSION "uss"
+#define TARANTOOL_SPACE_USER_SESSION "us"
 
 void gen_random(char *s, const int len) {
     static const char alphanum[] =
