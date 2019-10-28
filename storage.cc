@@ -327,11 +327,20 @@ private:
         tnt_stream_free(tnt); // Close connection and free stream object
     }
 
-    int getSpaceNo(std::string spaceName)
+    int getSpaceNo(struct tnt_stream* tnt, std::string spaceName)
     {
         if (this->spaces->find(spaceName) != this->spaces->end()) {
             return this->spaces->at(spaceName);
         }
+
+        tnt_reload_schema(tnt);
+        int spaceNo = tnt_get_spaceno(tnt, spaceName.c_str(), strlen(spaceName.c_str()));
+        if (spaceNo > 0) {
+            (*this->spaces)[spaceName] = spaceNo;
+            return spaceNo;
+        }
+
+        // try create space
 
         return UNDEFINED_VALUE;
     }
