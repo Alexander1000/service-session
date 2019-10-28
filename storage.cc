@@ -334,7 +334,11 @@ private:
             return spaceNo;
         }
 
-        // try create space
+        int tntError = tnt_errno(tnt);
+        if (tntError == 0) {
+            // try create space
+            tnt_reload_schema(tnt);
+        }
 
         return UNDEFINED_VALUE;
     }
