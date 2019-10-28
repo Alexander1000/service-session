@@ -15,7 +15,7 @@
 
 #define UNDEFINED_VALUE -1
 
-#define TARANTOOL_SPACE_USER_SESSION "us"
+#define TARANTOOL_SPACE_USER_SESSION "uss"
 
 void gen_random(char *s, const int len) {
     static const char alphanum[] =
@@ -332,12 +332,6 @@ private:
         if (spaceNo > 0) {
             (*this->spaces)[spaceName] = spaceNo;
             return spaceNo;
-        }
-
-        int tntError = tnt_errno(tnt);
-        if (tntError == 0) {
-            // try create space
-            tnt_reload_schema(tnt);
         }
 
         return UNDEFINED_VALUE;
