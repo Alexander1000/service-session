@@ -3,6 +3,7 @@
 ## 2019-10-29
 ### Changed
   - add internal method Storage::getSpaceNo
+  - more entropy for generating random session id
 
 ## 2019-10-27
 ### Changed
