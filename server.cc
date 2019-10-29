@@ -45,7 +45,7 @@ public:
         Storage* storage = this->getStorage();
         SessionData *sessionData = storage->getById(request->sessid());
 
-        if (sessionData != NULL) {
+        if (sessionData != nullptr) {
             response->set_userid(sessionData->userId);
             response->set_access_token(sessionData->accessToken);
             response->set_refresh_token(sessionData->refreshToken);

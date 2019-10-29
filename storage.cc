@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <memory.h>
+#include <map>
 
 #include <tarantool/tarantool.h>
 #include <tarantool/tnt_net.h>
@@ -34,8 +35,8 @@ class Storage
 public:
     Storage(std::string address) {
         this->address = address;
-        this->spaceNo = UNDEFINED_VALUE;
         this->indexNo = UNDEFINED_VALUE;
+        this->spaces = new std::map<std::string, int>;
     }
 
     SessionData* getById(std::string sessId) {
@@ -47,24 +48,18 @@ public:
             return NULL;
         }
 
-        if (this->spaceNo == UNDEFINED_VALUE || this->indexNo == UNDEFINED_VALUE) {
-            tnt_reload_schema(tnt);
+        int spaceNo = this->getSpaceNo(tnt, TARANTOOL_SPACE_USER_SESSION);
+
+        if (spaceNo == UNDEFINED_VALUE) {
+            std::cout << "error while get space no" << std::endl;
+            this->free_connect(tnt);
+            return NULL;
         }
 
-        if (this->spaceNo == UNDEFINED_VALUE) {
-            int spaceNo = tnt_get_spaceno(tnt, TARANTOOL_SPACE_USER_SESSION, strlen(TARANTOOL_SPACE_USER_SESSION));
-            if (spaceNo == -1) {
-                std::cout << "error while get space no" << std::endl;
-                this->free_connect(tnt);
-                return NULL;
-            }
-            this->spaceNo = spaceNo;
-        }
-
-        std::cout << "space no: " << this->spaceNo << std::endl;
+        std::cout << "space no: " << spaceNo << std::endl;
 
         if (this->indexNo == UNDEFINED_VALUE) {
-            int indexNo = tnt_get_indexno(tnt, this->spaceNo, "pk", strlen("pk"));
+            int indexNo = tnt_get_indexno(tnt, spaceNo, "pk", strlen("pk"));
             if (indexNo == -1) {
                 std::cout << "error while get index no" << std::endl;
                 this->free_connect(tnt);
@@ -84,7 +79,7 @@ public:
 
         int limit = 1, offset = 0;
 
-        int bytes_number = tnt_select(tnt, this->spaceNo, this->indexNo, limit, offset, TNT_ITER_EQ, obj);
+        int bytes_number = tnt_select(tnt, spaceNo, this->indexNo, limit, offset, TNT_ITER_EQ, obj);
         if (bytes_number == -1) {
             std::cout << "error: " << tnt_error(tnt) << std::endl;
             std::cout << "error while read data" << std::endl;
@@ -195,18 +190,11 @@ public:
             return -1;
         }
 
-        if (this->spaceNo == UNDEFINED_VALUE) {
-            tnt_reload_schema(conn);
-        }
-
-        if (this->spaceNo == UNDEFINED_VALUE) {
-            int spaceNo = tnt_get_spaceno(conn, TARANTOOL_SPACE_USER_SESSION, strlen(TARANTOOL_SPACE_USER_SESSION));
-            if (spaceNo == -1) {
-                std::cout << "error while get space no" << std::endl;
-                this->free_connect(conn);
-                return -1;
-            }
-            this->spaceNo = spaceNo;
+        int spaceNo = this->getSpaceNo(conn, TARANTOOL_SPACE_USER_SESSION);
+        if (spaceNo == UNDEFINED_VALUE) {
+            std::cout << "error while get space no" << std::endl;
+            this->free_connect(conn);
+            return -1;
         }
 
         struct tnt_stream *tuple = tnt_object(NULL);
@@ -219,7 +207,7 @@ public:
         tnt_object_add_str(tuple, sessionData->accessToken.c_str(), strlen(sessionData->accessToken.c_str()));
         tnt_object_add_str(tuple, sessionData->refreshToken.c_str(), strlen(sessionData->refreshToken.c_str()));
 
-        ssize_t bytes_count = tnt_replace(conn, this->spaceNo, tuple);
+        ssize_t bytes_count = tnt_replace(conn, spaceNo, tuple);
         if (bytes_count == -1) {
             std::cout << "error: " << tnt_error(conn) << std::endl;
             return -1;
@@ -237,18 +225,11 @@ public:
             return -1;
         }
 
-        if (this->spaceNo == UNDEFINED_VALUE) {
-            tnt_reload_schema(conn);
-        }
-
-        if (this->spaceNo == UNDEFINED_VALUE) {
-            int spaceNo = tnt_get_spaceno(conn, TARANTOOL_SPACE_USER_SESSION, strlen(TARANTOOL_SPACE_USER_SESSION));
-            if (spaceNo == -1) {
-                std::cout << "error while get space no" << std::endl;
-                this->free_connect(conn);
-                return -1;
-            }
-            this->spaceNo = spaceNo;
+        int spaceNo = this->getSpaceNo(conn, TARANTOOL_SPACE_USER_SESSION);
+        if (spaceNo == UNDEFINED_VALUE) {
+            std::cout << "error while get space no" << std::endl;
+            this->free_connect(conn);
+            return -1;
         }
 
         struct tnt_stream *tuple = tnt_object(NULL);
@@ -283,7 +264,7 @@ public:
         tnt_object_add_str(tuple, "", 0);
 
         // todo: check exist
-        ssize_t bytes_count = tnt_insert(conn, this->spaceNo, tuple);
+        ssize_t bytes_count = tnt_insert(conn, spaceNo, tuple);
         if (bytes_count == -1) {
             std::cout << "error: " << tnt_error(conn) << std::endl;
             return -1;
@@ -298,9 +279,9 @@ public:
 private:
     std::string address;
 
-    int spaceNo;
-
     int indexNo;
+
+    std::map<std::string, int>* spaces;
 
     struct tnt_stream* connect() {
         struct tnt_stream* tnt = tnt_net(NULL); // Allocating stream
@@ -321,5 +302,21 @@ private:
     void free_connect(struct tnt_stream* tnt) {
         tnt_close(tnt);
         tnt_stream_free(tnt); // Close connection and free stream object
+    }
+
+    int getSpaceNo(struct tnt_stream* tnt, std::string spaceName)
+    {
+        if (this->spaces->find(spaceName) != this->spaces->end()) {
+            return this->spaces->at(spaceName);
+        }
+
+        tnt_reload_schema(tnt);
+        int spaceNo = tnt_get_spaceno(tnt, spaceName.c_str(), strlen(spaceName.c_str()));
+        if (spaceNo > 0) {
+            (*this->spaces)[spaceName] = spaceNo;
+            return spaceNo;
+        }
+
+        return UNDEFINED_VALUE;
     }
 };
