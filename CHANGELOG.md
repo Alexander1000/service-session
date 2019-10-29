@@ -1,5 +1,9 @@
 # Changelog service-session
 
+## 2019-10-29
+### Changed
+  - add internal method Storage::getSpaceNo
+
 ## 2019-10-27
 ### Changed
   - Обновлена версия protobuf
