@@ -6,6 +6,7 @@
 #include <string>
 #include <memory.h>
 #include <map>
+#include <time.h>
 
 #include <tarantool/tarantool.h>
 #include <tarantool/tnt_net.h>
@@ -23,8 +24,15 @@ void gen_random(char *s, const int len) {
             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
             "abcdefghijklmnopqrstuvwxyz";
 
+    struct timespec ts;
+#ifdef TIME_UTC
+    timespec_get(&ts, TIME_UTC);
+#else
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+#endif
+
     for (int i = 0; i < len; ++i) {
-        s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+        s[i] = alphanum[(ts.tv_nsec + rand()) % (sizeof(alphanum) - 1)];
     }
 
     s[len] = 0;
