@@ -8,6 +8,8 @@
 #include <map>
 #include <time.h>
 
+#include "storage.h"
+
 #include <tarantool/tarantool.h>
 #include <tarantool/tnt_net.h>
 #include <tarantool/tnt_opt.h>
