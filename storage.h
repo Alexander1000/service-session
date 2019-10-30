@@ -1,0 +1,8 @@
+#ifndef H_SESSION_STORAGE_INCLUDE_
+#define H_SESSION_STORAGE_INCLUDE_
+
+class Storage
+{
+};
+
+#endif /* H_SESSION_STORAGE_INCLUDE_ */

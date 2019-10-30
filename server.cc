@@ -12,7 +12,7 @@
 
 #include "config.cc"
 #include "session_data.cc"
-#include "storage.cc"
+#include "storage.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
