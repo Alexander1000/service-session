@@ -1,17 +1,10 @@
 #include <string>
 
-class SessionData
-{
-public:
-    SessionData(std::string sessionId, int userId, std::string accessToken, std::string refreshToken) {
-        this->sessionId = sessionId;
-        this->userId = userId;
-        this->accessToken = accessToken;
-        this->refreshToken = refreshToken;
-    }
+#include "session_data.h"
 
-    std::string sessionId;
-    int userId;
-    std::string accessToken;
-    std::string refreshToken;
-};
+SessionData::SessionData(std::string sessionId, int userId, std::string accessToken, std::string refreshToken) {
+    this->sessionId = sessionId;
+    this->userId = userId;
+    this->accessToken = accessToken;
+    this->refreshToken = refreshToken;
+}

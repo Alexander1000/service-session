@@ -6,6 +6,8 @@
 
 #include <tarantool/tarantool.h>
 
+#include "session_data.h"
+
 class Storage
 {
     std::string address;
