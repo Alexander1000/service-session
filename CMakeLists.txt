@@ -58,6 +58,7 @@ set(SERVICE_SESSION_SOURCES
     service.pb.cc
     service.grpc.pb.cc
     storage.cc
+    session_data.cc
 )
 
 # add the executable
