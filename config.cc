@@ -5,6 +5,8 @@
 #include <io-buffer.h>
 #include <json-stream-analyzer.h>
 
+#include "config.h"
+
 typedef std::map<std::string, JsonStreamAnalyzer::Element *> JsonObject;
 
 class TarantoolConfig {

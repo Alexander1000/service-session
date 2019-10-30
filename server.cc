@@ -10,7 +10,7 @@
 
 #include "service.grpc.pb.h"
 
-#include "config.cc"
+#include "config.h"
 #include "session_data.h"
 #include "storage.h"
 
