@@ -1,5 +1,9 @@
 # Changelog service-session
 
+## 2019-10-31
+### Changed
+  - refactoring, add header-files for project
+
 ## 2019-10-29
 ### Changed
   - add internal method Storage::getSpaceNo
