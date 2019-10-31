@@ -10,9 +10,9 @@
 
 #include "service.grpc.pb.h"
 
-#include "config.cc"
-#include "session_data.cc"
-#include "storage.cc"
+#include "config.h"
+#include "session_data.h"
+#include "storage.h"
 
 using grpc::Server;
 using grpc::ServerBuilder;
