@@ -23,7 +23,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(GRPC_LIB_DIR /usr/local/lib)
 
-find_library(LIBPROTOBUF libprotobuf.a PATHS ${GRPC_LIB_DIR} NO_DEFAULT_PATH)
+find_library(LIBPROTOBUF libprotobuf.so PATHS ${GRPC_LIB_DIR} NO_DEFAULT_PATH)
 message(STATUS "Found protobuf libraries: ${LIBPROTOBUF}")
 
 # find_library(LIBARES ares PATHS ${GRPC_LIB_DIR} NO_DEFAULT_PATH)
