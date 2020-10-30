@@ -7,34 +7,24 @@
 #include "service.pb.h"
 
 #include <functional>
+#include <grpc/impl/codegen/port_platform.h>
 #include <grpcpp/impl/codegen/async_generic_service.h>
 #include <grpcpp/impl/codegen/async_stream.h>
 #include <grpcpp/impl/codegen/async_unary_call.h>
 #include <grpcpp/impl/codegen/client_callback.h>
 #include <grpcpp/impl/codegen/client_context.h>
 #include <grpcpp/impl/codegen/completion_queue.h>
-#include <grpcpp/impl/codegen/method_handler_impl.h>
+#include <grpcpp/impl/codegen/message_allocator.h>
+#include <grpcpp/impl/codegen/method_handler.h>
 #include <grpcpp/impl/codegen/proto_utils.h>
 #include <grpcpp/impl/codegen/rpc_method.h>
 #include <grpcpp/impl/codegen/server_callback.h>
+#include <grpcpp/impl/codegen/server_callback_handlers.h>
 #include <grpcpp/impl/codegen/server_context.h>
 #include <grpcpp/impl/codegen/service_type.h>
 #include <grpcpp/impl/codegen/status.h>
 #include <grpcpp/impl/codegen/stub_options.h>
 #include <grpcpp/impl/codegen/sync_stream.h>
-
-namespace grpc_impl {
-class CompletionQueue;
-class ServerCompletionQueue;
-class ServerContext;
-}  // namespace grpc_impl
-
-namespace grpc {
-namespace experimental {
-template <typename RequestT, typename ResponseT>
-class MessageAllocator;
-}  // namespace experimental
-}  // namespace grpc
 
 namespace session {
 
@@ -71,18 +61,30 @@ class SessionService final {
      public:
       virtual ~experimental_async_interface() {}
       virtual void Save(::grpc::ClientContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void Save(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::SaveResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void Save(::grpc::ClientContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
       virtual void Save(::grpc::ClientContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
-      virtual void Save(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::SaveResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       virtual void Get(::grpc::ClientContext* context, const ::session::GetRequest* request, ::session::GetResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void Get(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::GetResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void Get(::grpc::ClientContext* context, const ::session::GetRequest* request, ::session::GetResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
       virtual void Get(::grpc::ClientContext* context, const ::session::GetRequest* request, ::session::GetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
-      virtual void Get(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::GetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
       virtual void Create(::grpc::ClientContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, std::function<void(::grpc::Status)>) = 0;
-      virtual void Create(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::CreateResponse* response, std::function<void(::grpc::Status)>) = 0;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      virtual void Create(::grpc::ClientContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, ::grpc::ClientUnaryReactor* reactor) = 0;
+      #else
       virtual void Create(::grpc::ClientContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
-      virtual void Create(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::CreateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) = 0;
+      #endif
     };
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    typedef class experimental_async_interface async_interface;
+    #endif
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    async_interface* async() { return experimental_async(); }
+    #endif
     virtual class experimental_async_interface* experimental_async() { return nullptr; }
   private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::session::SaveResponse>* AsyncSaveRaw(::grpc::ClientContext* context, const ::session::SaveRequest& request, ::grpc::CompletionQueue* cq) = 0;
@@ -120,17 +122,23 @@ class SessionService final {
       public StubInterface::experimental_async_interface {
      public:
       void Save(::grpc::ClientContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response, std::function<void(::grpc::Status)>) override;
-      void Save(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::SaveResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void Save(::grpc::ClientContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
       void Save(::grpc::ClientContext* context, const ::session::SaveRequest* request, ::session::SaveResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
-      void Save(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::SaveResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void Get(::grpc::ClientContext* context, const ::session::GetRequest* request, ::session::GetResponse* response, std::function<void(::grpc::Status)>) override;
-      void Get(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::GetResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void Get(::grpc::ClientContext* context, const ::session::GetRequest* request, ::session::GetResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
       void Get(::grpc::ClientContext* context, const ::session::GetRequest* request, ::session::GetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
-      void Get(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::GetResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
       void Create(::grpc::ClientContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, std::function<void(::grpc::Status)>) override;
-      void Create(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::CreateResponse* response, std::function<void(::grpc::Status)>) override;
+      #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      void Create(::grpc::ClientContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, ::grpc::ClientUnaryReactor* reactor) override;
+      #else
       void Create(::grpc::ClientContext* context, const ::session::CreateRequest* request, ::session::CreateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
-      void Create(::grpc::ClientContext* context, const ::grpc::ByteBuffer* request, ::session::CreateResponse* response, ::grpc::experimental::ClientUnaryReactor* reactor) override;
+      #endif
      private:
       friend class Stub;
       explicit experimental_async(Stub* stub): stub_(stub) { }
@@ -229,19 +237,28 @@ class SessionService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     ExperimentalWithCallbackMethod_Save() {
-      ::grpc::Service::experimental().MarkMethodCallback(0,
-        new ::grpc_impl::internal::CallbackUnaryHandler< ::session::SaveRequest, ::session::SaveResponse>(
-          [this](::grpc::ServerContext* context,
-                 const ::session::SaveRequest* request,
-                 ::session::SaveResponse* response,
-                 ::grpc::experimental::ServerCallbackRpcController* controller) {
-                   return this->Save(context, request, response, controller);
-                 }));
-    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::session::SaveRequest, ::session::SaveResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::session::SaveRequest* request, ::session::SaveResponse* response) { return this->Save(context, request, response); }));}
     void SetMessageAllocatorFor_Save(
         ::grpc::experimental::MessageAllocator< ::session::SaveRequest, ::session::SaveResponse>* allocator) {
-      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::session::SaveRequest, ::session::SaveResponse>*>(
-          ::grpc::Service::experimental().GetHandler(0))
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(0);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(0);
+    #endif
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::session::SaveRequest, ::session::SaveResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~ExperimentalWithCallbackMethod_Save() override {
@@ -252,7 +269,14 @@ class SessionService final {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void Save(::grpc::ServerContext* /*context*/, const ::session::SaveRequest* /*request*/, ::session::SaveResponse* /*response*/, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* Save(
+      ::grpc::CallbackServerContext* /*context*/, const ::session::SaveRequest* /*request*/, ::session::SaveResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* Save(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::session::SaveRequest* /*request*/, ::session::SaveResponse* /*response*/)
+    #endif
+      { return nullptr; }
   };
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_Get : public BaseClass {
@@ -260,19 +284,28 @@ class SessionService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     ExperimentalWithCallbackMethod_Get() {
-      ::grpc::Service::experimental().MarkMethodCallback(1,
-        new ::grpc_impl::internal::CallbackUnaryHandler< ::session::GetRequest, ::session::GetResponse>(
-          [this](::grpc::ServerContext* context,
-                 const ::session::GetRequest* request,
-                 ::session::GetResponse* response,
-                 ::grpc::experimental::ServerCallbackRpcController* controller) {
-                   return this->Get(context, request, response, controller);
-                 }));
-    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::session::GetRequest, ::session::GetResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::session::GetRequest* request, ::session::GetResponse* response) { return this->Get(context, request, response); }));}
     void SetMessageAllocatorFor_Get(
         ::grpc::experimental::MessageAllocator< ::session::GetRequest, ::session::GetResponse>* allocator) {
-      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::session::GetRequest, ::session::GetResponse>*>(
-          ::grpc::Service::experimental().GetHandler(1))
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(1);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(1);
+    #endif
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::session::GetRequest, ::session::GetResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~ExperimentalWithCallbackMethod_Get() override {
@@ -283,7 +316,14 @@ class SessionService final {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void Get(::grpc::ServerContext* /*context*/, const ::session::GetRequest* /*request*/, ::session::GetResponse* /*response*/, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* Get(
+      ::grpc::CallbackServerContext* /*context*/, const ::session::GetRequest* /*request*/, ::session::GetResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* Get(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::session::GetRequest* /*request*/, ::session::GetResponse* /*response*/)
+    #endif
+      { return nullptr; }
   };
   template <class BaseClass>
   class ExperimentalWithCallbackMethod_Create : public BaseClass {
@@ -291,19 +331,28 @@ class SessionService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     ExperimentalWithCallbackMethod_Create() {
-      ::grpc::Service::experimental().MarkMethodCallback(2,
-        new ::grpc_impl::internal::CallbackUnaryHandler< ::session::CreateRequest, ::session::CreateResponse>(
-          [this](::grpc::ServerContext* context,
-                 const ::session::CreateRequest* request,
-                 ::session::CreateResponse* response,
-                 ::grpc::experimental::ServerCallbackRpcController* controller) {
-                   return this->Create(context, request, response, controller);
-                 }));
-    }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::session::CreateRequest, ::session::CreateResponse>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::session::CreateRequest* request, ::session::CreateResponse* response) { return this->Create(context, request, response); }));}
     void SetMessageAllocatorFor_Create(
         ::grpc::experimental::MessageAllocator< ::session::CreateRequest, ::session::CreateResponse>* allocator) {
-      static_cast<::grpc_impl::internal::CallbackUnaryHandler< ::session::CreateRequest, ::session::CreateResponse>*>(
-          ::grpc::Service::experimental().GetHandler(2))
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::GetHandler(2);
+    #else
+      ::grpc::internal::MethodHandler* const handler = ::grpc::Service::experimental().GetHandler(2);
+    #endif
+      static_cast<::grpc::internal::CallbackUnaryHandler< ::session::CreateRequest, ::session::CreateResponse>*>(handler)
               ->SetMessageAllocator(allocator);
     }
     ~ExperimentalWithCallbackMethod_Create() override {
@@ -314,8 +363,19 @@ class SessionService final {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void Create(::grpc::ServerContext* /*context*/, const ::session::CreateRequest* /*request*/, ::session::CreateResponse* /*response*/, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* Create(
+      ::grpc::CallbackServerContext* /*context*/, const ::session::CreateRequest* /*request*/, ::session::CreateResponse* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* Create(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::session::CreateRequest* /*request*/, ::session::CreateResponse* /*response*/)
+    #endif
+      { return nullptr; }
   };
+  #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+  typedef ExperimentalWithCallbackMethod_Save<ExperimentalWithCallbackMethod_Get<ExperimentalWithCallbackMethod_Create<Service > > > CallbackService;
+  #endif
+
   typedef ExperimentalWithCallbackMethod_Save<ExperimentalWithCallbackMethod_Get<ExperimentalWithCallbackMethod_Create<Service > > > ExperimentalCallbackService;
   template <class BaseClass>
   class WithGenericMethod_Save : public BaseClass {
@@ -434,14 +494,20 @@ class SessionService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     ExperimentalWithRawCallbackMethod_Save() {
-      ::grpc::Service::experimental().MarkMethodRawCallback(0,
-        new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-          [this](::grpc::ServerContext* context,
-                 const ::grpc::ByteBuffer* request,
-                 ::grpc::ByteBuffer* response,
-                 ::grpc::experimental::ServerCallbackRpcController* controller) {
-                   this->Save(context, request, response, controller);
-                 }));
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(0,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->Save(context, request, response); }));
     }
     ~ExperimentalWithRawCallbackMethod_Save() override {
       BaseClassMustBeDerivedFromService(this);
@@ -451,7 +517,14 @@ class SessionService final {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void Save(::grpc::ServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* Save(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* Save(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
   };
   template <class BaseClass>
   class ExperimentalWithRawCallbackMethod_Get : public BaseClass {
@@ -459,14 +532,20 @@ class SessionService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     ExperimentalWithRawCallbackMethod_Get() {
-      ::grpc::Service::experimental().MarkMethodRawCallback(1,
-        new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-          [this](::grpc::ServerContext* context,
-                 const ::grpc::ByteBuffer* request,
-                 ::grpc::ByteBuffer* response,
-                 ::grpc::experimental::ServerCallbackRpcController* controller) {
-                   this->Get(context, request, response, controller);
-                 }));
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(1,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->Get(context, request, response); }));
     }
     ~ExperimentalWithRawCallbackMethod_Get() override {
       BaseClassMustBeDerivedFromService(this);
@@ -476,7 +555,14 @@ class SessionService final {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void Get(::grpc::ServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* Get(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* Get(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
   };
   template <class BaseClass>
   class ExperimentalWithRawCallbackMethod_Create : public BaseClass {
@@ -484,14 +570,20 @@ class SessionService final {
     void BaseClassMustBeDerivedFromService(const Service* /*service*/) {}
    public:
     ExperimentalWithRawCallbackMethod_Create() {
-      ::grpc::Service::experimental().MarkMethodRawCallback(2,
-        new ::grpc_impl::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
-          [this](::grpc::ServerContext* context,
-                 const ::grpc::ByteBuffer* request,
-                 ::grpc::ByteBuffer* response,
-                 ::grpc::experimental::ServerCallbackRpcController* controller) {
-                   this->Create(context, request, response, controller);
-                 }));
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+      ::grpc::Service::
+    #else
+      ::grpc::Service::experimental().
+    #endif
+        MarkMethodRawCallback(2,
+          new ::grpc::internal::CallbackUnaryHandler< ::grpc::ByteBuffer, ::grpc::ByteBuffer>(
+            [this](
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+                   ::grpc::CallbackServerContext*
+    #else
+                   ::grpc::experimental::CallbackServerContext*
+    #endif
+                     context, const ::grpc::ByteBuffer* request, ::grpc::ByteBuffer* response) { return this->Create(context, request, response); }));
     }
     ~ExperimentalWithRawCallbackMethod_Create() override {
       BaseClassMustBeDerivedFromService(this);
@@ -501,7 +593,14 @@ class SessionService final {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
-    virtual void Create(::grpc::ServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/, ::grpc::experimental::ServerCallbackRpcController* controller) { controller->Finish(::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "")); }
+    #ifdef GRPC_CALLBACK_API_NONEXPERIMENTAL
+    virtual ::grpc::ServerUnaryReactor* Create(
+      ::grpc::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #else
+    virtual ::grpc::experimental::ServerUnaryReactor* Create(
+      ::grpc::experimental::CallbackServerContext* /*context*/, const ::grpc::ByteBuffer* /*request*/, ::grpc::ByteBuffer* /*response*/)
+    #endif
+      { return nullptr; }
   };
   template <class BaseClass>
   class WithStreamedUnaryMethod_Save : public BaseClass {
@@ -510,7 +609,14 @@ class SessionService final {
    public:
     WithStreamedUnaryMethod_Save() {
       ::grpc::Service::MarkMethodStreamed(0,
-        new ::grpc::internal::StreamedUnaryHandler< ::session::SaveRequest, ::session::SaveResponse>(std::bind(&WithStreamedUnaryMethod_Save<BaseClass>::StreamedSave, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::session::SaveRequest, ::session::SaveResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::session::SaveRequest, ::session::SaveResponse>* streamer) {
+                       return this->StreamedSave(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_Save() override {
       BaseClassMustBeDerivedFromService(this);
@@ -530,7 +636,14 @@ class SessionService final {
    public:
     WithStreamedUnaryMethod_Get() {
       ::grpc::Service::MarkMethodStreamed(1,
-        new ::grpc::internal::StreamedUnaryHandler< ::session::GetRequest, ::session::GetResponse>(std::bind(&WithStreamedUnaryMethod_Get<BaseClass>::StreamedGet, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::session::GetRequest, ::session::GetResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::session::GetRequest, ::session::GetResponse>* streamer) {
+                       return this->StreamedGet(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_Get() override {
       BaseClassMustBeDerivedFromService(this);
@@ -550,7 +663,14 @@ class SessionService final {
    public:
     WithStreamedUnaryMethod_Create() {
       ::grpc::Service::MarkMethodStreamed(2,
-        new ::grpc::internal::StreamedUnaryHandler< ::session::CreateRequest, ::session::CreateResponse>(std::bind(&WithStreamedUnaryMethod_Create<BaseClass>::StreamedCreate, this, std::placeholders::_1, std::placeholders::_2)));
+        new ::grpc::internal::StreamedUnaryHandler<
+          ::session::CreateRequest, ::session::CreateResponse>(
+            [this](::grpc::ServerContext* context,
+                   ::grpc::ServerUnaryStreamer<
+                     ::session::CreateRequest, ::session::CreateResponse>* streamer) {
+                       return this->StreamedCreate(context,
+                         streamer);
+                  }));
     }
     ~WithStreamedUnaryMethod_Create() override {
       BaseClassMustBeDerivedFromService(this);

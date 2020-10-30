@@ -1,5 +1,5 @@
 #include <iostream>
-#include <string>
+#include <cstring>
 #include <map>
 
 #include <io-buffer.h>
@@ -15,7 +15,7 @@ TarantoolConfig::TarantoolConfig()
 
 char* TarantoolConfig::getUri()
 {
-    int n_size = strlen(this->host.c_str()) + 2 + 6;
+    int n_size = std::strlen(this->host.c_str()) + 2 + 6;
     char* uri = new char[n_size];
     memset(uri, 0, sizeof(char) * n_size);
     std::sprintf(uri, "%s:%d", this->host.c_str(), this->port);
